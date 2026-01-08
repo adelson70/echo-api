@@ -1,0 +1,32 @@
+model ps_transports {
+  id                          String                              @unique @db.VarChar(40)
+  async_operations            Int?
+  bind                        String?                             @db.VarChar(40)
+  ca_list_file                String?                             @db.VarChar(200)
+  cert_file                   String?                             @db.VarChar(200)
+  cipher                      String?                             @db.VarChar(200)
+  domain                      String?                             @db.VarChar(40)
+  external_media_address      String?                             @db.VarChar(40)
+  external_signaling_address  String?                             @db.VarChar(40)
+  external_signaling_port     Int?
+  method                      pjsip_transport_method_values_v2?
+  local_net                   String?                             @db.VarChar(40)
+  password                    String?                             @db.VarChar(40)
+  priv_key_file               String?                             @db.VarChar(200)
+  protocol                    pjsip_transport_protocol_values_v2?
+  require_client_cert         ast_bool_values?
+  verify_client               ast_bool_values?
+  verify_server               ast_bool_values?
+  tos                         String?                             @db.VarChar(10)
+  cos                         Int?
+  allow_reload                ast_bool_values?
+  symmetric_transport         ast_bool_values?
+  allow_wildcard_certs        ast_bool_values?
+  tcp_keepalive_enable        Boolean?
+  tcp_keepalive_idle_time     Int?
+  tcp_keepalive_interval_time Int?
+  tcp_keepalive_probe_count   Int?
+
+  @@index([id], map: "ps_transports_id")
+}
+

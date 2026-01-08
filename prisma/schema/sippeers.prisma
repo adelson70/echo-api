@@ -1,0 +1,151 @@
+model sippeers {
+  id                 Int                           @id @default(autoincrement())
+  name               String                        @unique @db.VarChar(40)
+  ipaddr             String?                       @db.VarChar(45)
+  port               Int?
+  regseconds         Int?
+  defaultuser        String?                       @db.VarChar(40)
+  fullcontact        String?                       @db.VarChar(80)
+  regserver          String?                       @db.VarChar(20)
+  useragent          String?                       @db.VarChar(255)
+  lastms             Int?
+  host               String?                       @db.VarChar(40)
+  type               type_values?
+  context            String?                       @db.VarChar(40)
+  permit             String?                       @db.VarChar(95)
+  deny               String?                       @db.VarChar(95)
+  secret             String?                       @db.VarChar(40)
+  md5secret          String?                       @db.VarChar(40)
+  remotesecret       String?                       @db.VarChar(40)
+  transport          sip_transport_values?
+  dtmfmode           sip_dtmfmode_values?
+  directmedia        sip_directmedia_values_v2?
+  nat                String?                       @db.VarChar(29)
+  callgroup          String?                       @db.VarChar(40)
+  pickupgroup        String?                       @db.VarChar(40)
+  language           String?                       @db.VarChar(40)
+  disallow           String?                       @db.VarChar(200)
+  allow              String?                       @db.VarChar(200)
+  insecure           String?                       @db.VarChar(40)
+  trustrpid          yes_no_values?
+  progressinband     sip_progressinband_values?
+  promiscredir       yes_no_values?
+  useclientcode      yes_no_values?
+  accountcode        String?                       @db.VarChar(80)
+  setvar             String?                       @db.VarChar(200)
+  callerid           String?                       @db.VarChar(40)
+  amaflags           String?                       @db.VarChar(40)
+  callcounter        yes_no_values?
+  busylevel          Int?
+  allowoverlap       yes_no_values?
+  allowsubscribe     yes_no_values?
+  videosupport       yes_no_values?
+  maxcallbitrate     Int?
+  rfc2833compensate  yes_no_values?
+  mailbox            String?                       @db.VarChar(40)
+  session_timers     sip_session_timers_values?    @map("session-timers")
+  session_expires    Int?                          @map("session-expires")
+  session_minse      Int?                          @map("session-minse")
+  session_refresher  sip_session_refresher_values? @map("session-refresher")
+  t38pt_usertpsource String?                       @db.VarChar(40)
+  regexten           String?                       @db.VarChar(40)
+  fromdomain         String?                       @db.VarChar(40)
+  fromuser           String?                       @db.VarChar(40)
+  qualify            String?                       @db.VarChar(40)
+  defaultip          String?                       @db.VarChar(45)
+  rtptimeout         Int?
+  rtpholdtimeout     Int?
+  sendrpid           yes_no_values?
+  outboundproxy      String?                       @db.VarChar(40)
+  callbackextension  String?                       @db.VarChar(40)
+  timert1            Int?
+  timerb             Int?
+  qualifyfreq        Int?
+  constantssrc       yes_no_values?
+  contactpermit      String?                       @db.VarChar(95)
+  contactdeny        String?                       @db.VarChar(95)
+  usereqphone        yes_no_values?
+  textsupport        yes_no_values?
+  faxdetect          yes_no_values?
+  buggymwi           yes_no_values?
+  auth               String?                       @db.VarChar(40)
+  fullname           String?                       @db.VarChar(40)
+  trunkname          String?                       @db.VarChar(40)
+  cid_number         String?                       @db.VarChar(40)
+  callingpres        sip_callingpres_values?
+  mohinterpret       String?                       @db.VarChar(40)
+  mohsuggest         String?                       @db.VarChar(40)
+  parkinglot         String?                       @db.VarChar(40)
+  hasvoicemail       yes_no_values?
+  subscribemwi       yes_no_values?
+  vmexten            String?                       @db.VarChar(40)
+  autoframing        yes_no_values?
+  rtpkeepalive       Int?
+  call_limit         Int?                          @map("call-limit")
+  g726nonstandard    yes_no_values?
+  ignoresdpversion   yes_no_values?
+  allowtransfer      yes_no_values?
+  dynamic            yes_no_values?
+  path               String?                       @db.VarChar(256)
+  supportpath        yes_no_values?
+
+  @@index([host, port], map: "sippeers_host_port")
+  @@index([ipaddr, port], map: "sippeers_ipaddr_port")
+  @@index([name], map: "sippeers_name")
+  @@index([name, host], map: "sippeers_name_host")
+}
+
+enum sip_transport_values {
+  udp
+  tcp
+  tls
+  ws
+  wss
+  udp_tcp @map("udp,tcp")
+  tcp_udp @map("tcp,udp")
+}
+
+enum sip_dtmfmode_values {
+  rfc2833
+  info
+  shortinfo
+  inband
+  auto
+}
+
+enum sip_directmedia_values_v2 {
+  yes
+  no
+  nonat
+  update
+  outgoing
+}
+
+enum sip_progressinband_values {
+  yes
+  no
+  never
+}
+
+enum sip_session_timers_values {
+  accept
+  refuse
+  originate
+}
+
+enum sip_session_refresher_values {
+  uac
+  uas
+}
+
+enum sip_callingpres_values {
+  allowed_not_screened
+  allowed_passed_screen
+  allowed_failed_screen
+  allowed
+  prohib_not_screened
+  prohib_passed_screen
+  prohib_failed_screen
+  prohib
+}
+

@@ -1,0 +1,40 @@
+model ps_globals {
+  id                                         String                                       @unique @db.VarChar(40)
+  max_forwards                               Int?
+  user_agent                                 String?                                      @db.VarChar(255)
+  default_outbound_endpoint                  String?                                      @db.VarChar(40)
+  debug                                      String?                                      @db.VarChar(40)
+  endpoint_identifier_order                  String?                                      @db.VarChar(40)
+  max_initial_qualify_time                   Int?
+  default_from_user                          String?                                      @db.VarChar(80)
+  keep_alive_interval                        Int?
+  regcontext                                 String?                                      @db.VarChar(80)
+  contact_expiration_check_interval          Int?
+  default_voicemail_extension                String?                                      @db.VarChar(40)
+  disable_multi_domain                       ast_bool_values?
+  unidentified_request_count                 Int?
+  unidentified_request_period                Int?
+  unidentified_request_prune_interval        Int?
+  default_realm                              String?                                      @db.VarChar(40)
+  mwi_tps_queue_high                         Int?
+  mwi_tps_queue_low                          Int?
+  mwi_disable_initial_unsolicited            ast_bool_values?
+  ignore_uri_user_options                    ast_bool_values?
+  use_callerid_contact                       ast_bool_values?
+  send_contact_status_on_update_registration ast_bool_values?
+  taskprocessor_overload_trigger             pjsip_taskprocessor_overload_trigger_values?
+  norefersub                                 ast_bool_values?
+  allow_sending_180_after_183                ast_bool_values?
+  all_codecs_on_empty_reinvite               ast_bool_values?
+  default_auth_algorithms_uas                String?                                      @db.VarChar(1024)
+  default_auth_algorithms_uac                String?                                      @db.VarChar(1024)
+
+  @@index([id], map: "ps_globals_id")
+}
+
+enum pjsip_taskprocessor_overload_trigger_values {
+  none
+  global
+  pjsip_only
+}
+

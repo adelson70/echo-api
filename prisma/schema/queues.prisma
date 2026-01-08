@@ -1,0 +1,101 @@
+model queue_members {
+  queue_name      String           @db.VarChar(80)
+  interface       String           @db.VarChar(80)
+  membername      String?          @db.VarChar(80)
+  state_interface String?          @db.VarChar(80)
+  penalty         Int?
+  paused          Int?
+  uniqueid        Int              @unique
+  wrapuptime      Int?
+  ringinuse       ast_bool_values?
+  reason_paused   String?          @db.VarChar(80)
+
+  @@id([queue_name, interface])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model queue_rules {
+  rule_name   String @db.VarChar(80)
+  time        String @db.VarChar(32)
+  min_penalty String @db.VarChar(32)
+  max_penalty String @db.VarChar(32)
+
+  @@ignore
+}
+
+model queues {
+  name                        String                  @id @db.VarChar(128)
+  musiconhold                 String?                 @db.VarChar(128)
+  announce                    String?                 @db.VarChar(128)
+  context                     String?                 @db.VarChar(128)
+  timeout                     Int?
+  ringinuse                   yesno_values?
+  setinterfacevar             yesno_values?
+  setqueuevar                 yesno_values?
+  setqueueentryvar            yesno_values?
+  monitor_format              String?                 @db.VarChar(8)
+  membermacro                 String?                 @db.VarChar(512)
+  membergosub                 String?                 @db.VarChar(512)
+  queue_youarenext            String?                 @db.VarChar(128)
+  queue_thereare              String?                 @db.VarChar(128)
+  queue_callswaiting          String?                 @db.VarChar(128)
+  queue_quantity1             String?                 @db.VarChar(128)
+  queue_quantity2             String?                 @db.VarChar(128)
+  queue_holdtime              String?                 @db.VarChar(128)
+  queue_minutes               String?                 @db.VarChar(128)
+  queue_minute                String?                 @db.VarChar(128)
+  queue_seconds               String?                 @db.VarChar(128)
+  queue_thankyou              String?                 @db.VarChar(128)
+  queue_callerannounce        String?                 @db.VarChar(128)
+  queue_reporthold            String?                 @db.VarChar(128)
+  announce_frequency          Int?
+  announce_to_first_user      yesno_values?
+  min_announce_frequency      Int?
+  announce_round_seconds      Int?
+  announce_holdtime           String?                 @db.VarChar(128)
+  announce_position           String?                 @db.VarChar(128)
+  announce_position_limit     Int?
+  periodic_announce           String?                 @db.VarChar(50)
+  periodic_announce_frequency Int?
+  relative_periodic_announce  yesno_values?
+  random_periodic_announce    yesno_values?
+  retry                       Int?
+  wrapuptime                  Int?
+  penaltymemberslimit         Int?
+  autofill                    yesno_values?
+  monitor_type                String?                 @db.VarChar(128)
+  autopause                   queue_autopause_values?
+  autopausedelay              Int?
+  autopausebusy               yesno_values?
+  autopauseunavail            yesno_values?
+  maxlen                      Int?
+  servicelevel                Int?
+  strategy                    queue_strategy_values?
+  joinempty                   String?                 @db.VarChar(128)
+  leavewhenempty              String?                 @db.VarChar(128)
+  reportholdtime              yesno_values?
+  memberdelay                 Int?
+  weight                      Int?
+  timeoutrestart              yesno_values?
+  defaultrule                 String?                 @db.VarChar(128)
+  timeoutpriority             String?                 @db.VarChar(128)
+  log_restricted_caller_id    ast_bool_values?
+}
+
+enum queue_autopause_values {
+  yes
+  no
+  all
+}
+
+enum queue_strategy_values {
+  ringall
+  leastrecent
+  fewestcalls
+  random
+  rrmemory
+  linear
+  wrandom
+  rrordered
+}
+

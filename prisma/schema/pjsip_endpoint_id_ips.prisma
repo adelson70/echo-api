@@ -1,0 +1,11 @@
+model ps_endpoint_id_ips {
+  id                String           @unique @db.VarChar(255)
+  endpoint          String?          @db.VarChar(255)
+  match             String?          @db.VarChar(80)
+  srv_lookups       ast_bool_values?
+  match_header      String?          @db.VarChar(255)
+  match_request_uri String?          @db.VarChar(255)
+
+  @@index([id], map: "ps_endpoint_id_ips_id")
+}
+

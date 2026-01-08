@@ -1,0 +1,8 @@
+model stir_tn {
+  id               String           @id @db.VarChar(80)
+  private_key_file String?          @db.VarChar(1024)
+  public_cert_url  String?          @db.VarChar(1024)
+  attest_level     String?          @db.VarChar(1)
+  send_mky         ast_bool_values?
+}
+

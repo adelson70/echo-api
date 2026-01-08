@@ -1,0 +1,7 @@
+model ps_domain_aliases {
+  id     String  @unique @db.VarChar(255)
+  domain String? @db.VarChar(255)
+
+  @@index([id], map: "ps_domain_aliases_id")
+}
+

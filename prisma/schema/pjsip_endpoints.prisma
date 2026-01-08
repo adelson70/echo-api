@@ -1,0 +1,261 @@
+model ps_endpoints {
+  id                                 String                                      @unique @db.VarChar(255)
+  transport                          String?                                     @db.VarChar(40)
+  aors                               String?                                     @db.VarChar(2048)
+  auth                               String?                                     @db.VarChar(255)
+  context                            String?                                     @db.VarChar(40)
+  disallow                           String?                                     @db.VarChar(200)
+  allow                              String?                                     @db.VarChar(200)
+  direct_media                       ast_bool_values?
+  connected_line_method              pjsip_connected_line_method_values?
+  direct_media_method                pjsip_connected_line_method_values?
+  direct_media_glare_mitigation      pjsip_direct_media_glare_mitigation_values?
+  disable_direct_media_on_nat        ast_bool_values?
+  dtmf_mode                          pjsip_dtmf_mode_values_v3?
+  external_media_address             String?                                     @db.VarChar(40)
+  force_rport                        ast_bool_values?
+  ice_support                        ast_bool_values?
+  identify_by                        String?                                     @db.VarChar(80)
+  mailboxes                          String?                                     @db.VarChar(40)
+  moh_suggest                        String?                                     @db.VarChar(40)
+  outbound_auth                      String?                                     @db.VarChar(255)
+  outbound_proxy                     String?                                     @db.VarChar(255)
+  rewrite_contact                    ast_bool_values?
+  rtp_ipv6                           ast_bool_values?
+  rtp_symmetric                      ast_bool_values?
+  send_diversion                     ast_bool_values?
+  send_pai                           ast_bool_values?
+  send_rpid                          ast_bool_values?
+  timers_min_se                      Int?
+  timers                             pjsip_timer_values?
+  timers_sess_expires                Int?
+  callerid                           String?                                     @db.VarChar(40)
+  callerid_privacy                   pjsip_cid_privacy_values?
+  callerid_tag                       String?                                     @db.VarChar(40)
+  rel                                pjsip_100rel_values_v2?                     @map("100rel")
+  aggregate_mwi                      ast_bool_values?
+  trust_id_inbound                   ast_bool_values?
+  trust_id_outbound                  ast_bool_values?
+  use_ptime                          ast_bool_values?
+  use_avpf                           ast_bool_values?
+  media_encryption                   pjsip_media_encryption_values?
+  inband_progress                    ast_bool_values?
+  call_group                         String?                                     @db.VarChar(40)
+  pickup_group                       String?                                     @db.VarChar(40)
+  named_call_group                   String?                                     @db.VarChar(40)
+  named_pickup_group                 String?                                     @db.VarChar(40)
+  device_state_busy_at               Int?
+  fax_detect                         ast_bool_values?
+  t38_udptl                          ast_bool_values?
+  t38_udptl_ec                       pjsip_t38udptl_ec_values?
+  t38_udptl_maxdatagram              Int?
+  t38_udptl_nat                      ast_bool_values?
+  t38_udptl_ipv6                     ast_bool_values?
+  tone_zone                          String?                                     @db.VarChar(40)
+  language                           String?                                     @db.VarChar(40)
+  one_touch_recording                ast_bool_values?
+  record_on_feature                  String?                                     @db.VarChar(40)
+  record_off_feature                 String?                                     @db.VarChar(40)
+  rtp_engine                         String?                                     @db.VarChar(40)
+  allow_transfer                     ast_bool_values?
+  allow_subscribe                    ast_bool_values?
+  sdp_owner                          String?                                     @db.VarChar(40)
+  sdp_session                        String?                                     @db.VarChar(40)
+  tos_audio                          String?                                     @db.VarChar(10)
+  tos_video                          String?                                     @db.VarChar(10)
+  sub_min_expiry                     Int?
+  from_domain                        String?                                     @db.VarChar(40)
+  from_user                          String?                                     @db.VarChar(40)
+  mwi_from_user                      String?                                     @db.VarChar(40)
+  dtls_verify                        String?                                     @db.VarChar(40)
+  dtls_rekey                         String?                                     @db.VarChar(40)
+  dtls_cert_file                     String?                                     @db.VarChar(200)
+  dtls_private_key                   String?                                     @db.VarChar(200)
+  dtls_cipher                        String?                                     @db.VarChar(200)
+  dtls_ca_file                       String?                                     @db.VarChar(200)
+  dtls_ca_path                       String?                                     @db.VarChar(200)
+  dtls_setup                         pjsip_dtls_setup_values?
+  srtp_tag_32                        ast_bool_values?
+  media_address                      String?                                     @db.VarChar(40)
+  redirect_method                    pjsip_redirect_method_values?
+  set_var                            String?
+  cos_audio                          Int?
+  cos_video                          Int?
+  message_context                    String?                                     @db.VarChar(40)
+  force_avp                          ast_bool_values?
+  media_use_received_transport       ast_bool_values?
+  accountcode                        String?                                     @db.VarChar(80)
+  user_eq_phone                      ast_bool_values?
+  moh_passthrough                    ast_bool_values?
+  media_encryption_optimistic        ast_bool_values?
+  rpid_immediate                     ast_bool_values?
+  g726_non_standard                  ast_bool_values?
+  rtp_keepalive                      Int?
+  rtp_timeout                        Int?
+  rtp_timeout_hold                   Int?
+  bind_rtp_to_media_address          ast_bool_values?
+  voicemail_extension                String?                                     @db.VarChar(40)
+  mwi_subscribe_replaces_unsolicited ast_bool_values?
+  deny                               String?                                     @db.VarChar(95)
+  permit                             String?                                     @db.VarChar(95)
+  acl                                String?                                     @db.VarChar(40)
+  contact_deny                       String?                                     @db.VarChar(95)
+  contact_permit                     String?                                     @db.VarChar(95)
+  contact_acl                        String?                                     @db.VarChar(40)
+  subscribe_context                  String?                                     @db.VarChar(40)
+  fax_detect_timeout                 Int?
+  contact_user                       String?                                     @db.VarChar(80)
+  preferred_codec_only               ast_bool_values?
+  asymmetric_rtp_codec               ast_bool_values?
+  rtcp_mux                           ast_bool_values?
+  allow_overlap                      ast_bool_values?
+  refer_blind_progress               ast_bool_values?
+  notify_early_inuse_ringing         ast_bool_values?
+  max_audio_streams                  Int?
+  max_video_streams                  Int?
+  webrtc                             ast_bool_values?
+  dtls_fingerprint                   sha_hash_values?
+  incoming_mwi_mailbox               String?                                     @db.VarChar(40)
+  bundle                             ast_bool_values?
+  dtls_auto_generate_cert            ast_bool_values?
+  follow_early_media_fork            ast_bool_values?
+  accept_multiple_sdp_answers        ast_bool_values?
+  suppress_q850_reason_headers       ast_bool_values?
+  trust_connected_line               ast_bool_values?
+  send_connected_line                ast_bool_values?
+  ignore_183_without_sdp             ast_bool_values?
+  codec_prefs_incoming_offer         String?                                     @db.VarChar(128)
+  codec_prefs_outgoing_offer         String?                                     @db.VarChar(128)
+  codec_prefs_incoming_answer        String?                                     @db.VarChar(128)
+  codec_prefs_outgoing_answer        String?                                     @db.VarChar(128)
+  stir_shaken                        ast_bool_values?
+  send_history_info                  ast_bool_values?
+  allow_unauthenticated_options      ast_bool_values?
+  t38_bind_udptl_to_media_address    ast_bool_values?
+  geoloc_incoming_call_profile       String?                                     @db.VarChar(80)
+  geoloc_outgoing_call_profile       String?                                     @db.VarChar(80)
+  incoming_call_offer_pref           pjsip_incoming_call_offer_pref_values?
+  outgoing_call_offer_pref           pjsip_outgoing_call_offer_pref_values?
+  stir_shaken_profile                String?                                     @db.VarChar(80)
+  security_negotiation               security_negotiation_values?
+  security_mechanisms                String?                                     @db.VarChar(512)
+  send_aoc                           ast_bool_values?
+  overlap_context                    String?                                     @db.VarChar(80)
+  tenantid                           String?                                     @db.VarChar(80)
+  suppress_moh_on_sendonly           ast_bool_values?
+
+  @@index([id], map: "ps_endpoints_id")
+}
+
+enum pjsip_100rel_values_v2 {
+  no
+  required
+  peer_supported
+  yes
+}
+
+enum pjsip_cid_privacy_values {
+  allowed_not_screened
+  allowed_passed_screened
+  allowed_failed_screened
+  allowed
+  prohib_not_screened
+  prohib_passed_screened
+  prohib_failed_screened
+  prohib
+  unavailable
+}
+
+enum pjsip_connected_line_method_values {
+  invite
+  reinvite
+  update
+}
+
+enum pjsip_direct_media_glare_mitigation_values {
+  none
+  outgoing
+  incoming
+}
+
+enum pjsip_dtls_setup_values {
+  active
+  passive
+  actpass
+}
+
+enum pjsip_dtmf_mode_values_v3 {
+  rfc4733
+  inband
+  info
+  auto
+  auto_info
+}
+
+enum pjsip_incoming_call_offer_pref_values {
+  local
+  local_first
+  remote
+  remote_first
+}
+
+enum pjsip_media_encryption_values {
+  no
+  sdes
+  dtls
+}
+
+enum pjsip_outgoing_call_offer_pref_values {
+  local
+  local_merge
+  local_first
+  remote
+  remote_merge
+  remote_first
+}
+
+enum pjsip_redirect_method_values {
+  user
+  uri_core
+  uri_pjsip
+}
+
+enum pjsip_t38udptl_ec_values {
+  none
+  fec
+  redundancy
+}
+
+enum pjsip_timer_values {
+  forced
+  no
+  required
+  yes
+}
+
+enum pjsip_transport_method_values_v2 {
+  default
+  unspecified
+  tlsv1
+  tlsv1_1
+  tlsv1_2
+  tlsv1_3
+  sslv2
+  sslv23
+  sslv3
+}
+
+enum pjsip_transport_protocol_values_v2 {
+  udp
+  tcp
+  tls
+  ws
+  wss
+  flow
+}
+
+enum security_negotiation_values {
+  no
+  mediasec
+}
+

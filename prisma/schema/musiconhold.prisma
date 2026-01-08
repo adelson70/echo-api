@@ -1,0 +1,31 @@
+model musiconhold {
+  name              String              @id @db.VarChar(80)
+  mode              moh_mode_values?
+  directory         String?             @db.VarChar(255)
+  application       String?             @db.VarChar(255)
+  digit             String?             @db.VarChar(1)
+  sort              String?             @db.VarChar(10)
+  format            String?             @db.VarChar(10)
+  stamp             DateTime?           @db.Timestamp(6)
+  loop_last         yesno_values?
+  musiconhold_entry musiconhold_entry[]
+}
+
+model musiconhold_entry {
+  name        String      @db.VarChar(80)
+  position    Int
+  entry       String      @db.VarChar(1024)
+  musiconhold musiconhold @relation(fields: [name], references: [name], onDelete: NoAction, onUpdate: NoAction, map: "fk_musiconhold_entry_name_musiconhold")
+
+  @@id([name, position])
+}
+
+enum moh_mode_values {
+  custom
+  files
+  mp3nb
+  quietmp3nb
+  quietmp3
+  playlist
+}
+

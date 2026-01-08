@@ -1,0 +1,73 @@
+model iaxfriends {
+  id                Int                          @id @default(autoincrement())
+  name              String                       @unique @db.VarChar(40)
+  type              type_values?
+  username          String?                      @db.VarChar(40)
+  mailbox           String?                      @db.VarChar(40)
+  secret            String?                      @db.VarChar(40)
+  dbsecret          String?                      @db.VarChar(40)
+  context           String?                      @db.VarChar(40)
+  regcontext        String?                      @db.VarChar(40)
+  host              String?                      @db.VarChar(40)
+  ipaddr            String?                      @db.VarChar(40)
+  port              Int?
+  defaultip         String?                      @db.VarChar(20)
+  sourceaddress     String?                      @db.VarChar(20)
+  mask              String?                      @db.VarChar(20)
+  regexten          String?                      @db.VarChar(40)
+  regseconds        Int?
+  accountcode       String?                      @db.VarChar(80)
+  mohinterpret      String?                      @db.VarChar(20)
+  mohsuggest        String?                      @db.VarChar(20)
+  inkeys            String?                      @db.VarChar(40)
+  outkeys           String?                      @db.VarChar(40)
+  language          String?                      @db.VarChar(10)
+  callerid          String?                      @db.VarChar(100)
+  cid_number        String?                      @db.VarChar(40)
+  sendani           yes_no_values?
+  fullname          String?                      @db.VarChar(40)
+  trunk             yes_no_values?
+  auth              String?                      @db.VarChar(20)
+  maxauthreq        Int?
+  requirecalltoken  iax_requirecalltoken_values?
+  encryption        iax_encryption_values?
+  transfer          iax_transfer_values?
+  jitterbuffer      yes_no_values?
+  forcejitterbuffer yes_no_values?
+  disallow          String?                      @db.VarChar(200)
+  allow             String?                      @db.VarChar(200)
+  codecpriority     String?                      @db.VarChar(40)
+  qualify           String?                      @db.VarChar(10)
+  qualifysmoothing  yes_no_values?
+  qualifyfreqok     String?                      @db.VarChar(10)
+  qualifyfreqnotok  String?                      @db.VarChar(10)
+  timezone          String?                      @db.VarChar(20)
+  adsi              yes_no_values?
+  amaflags          String?                      @db.VarChar(20)
+  setvar            String?                      @db.VarChar(200)
+
+  @@index([host, port], map: "iaxfriends_host_port")
+  @@index([ipaddr, port], map: "iaxfriends_ipaddr_port")
+  @@index([name], map: "iaxfriends_name")
+  @@index([name, host], map: "iaxfriends_name_host")
+  @@index([name, ipaddr, port], map: "iaxfriends_name_ipaddr_port")
+}
+
+enum iax_encryption_values {
+  yes
+  no
+  aes128
+}
+
+enum iax_requirecalltoken_values {
+  yes
+  no
+  auto
+}
+
+enum iax_transfer_values {
+  yes
+  no
+  mediaonly
+}
+

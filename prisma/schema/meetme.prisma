@@ -1,0 +1,17 @@
+model meetme {
+  bookid            Int       @id @default(autoincrement())
+  confno            String    @db.VarChar(80)
+  starttime         DateTime? @db.Timestamp(6)
+  endtime           DateTime? @db.Timestamp(6)
+  pin               String?   @db.VarChar(20)
+  adminpin          String?   @db.VarChar(20)
+  opts              String?   @db.VarChar(20)
+  adminopts         String?   @db.VarChar(20)
+  recordingfilename String?   @db.VarChar(80)
+  recordingformat   String?   @db.VarChar(10)
+  maxusers          Int?
+  members           Int
+
+  @@index([confno, starttime, endtime], map: "meetme_confno_start_end")
+}
+

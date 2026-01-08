@@ -1,0 +1,40 @@
+model ps_asterisk_publications {
+  id                   String           @unique @db.VarChar(40)
+  devicestate_publish  String?          @db.VarChar(40)
+  mailboxstate_publish String?          @db.VarChar(40)
+  device_state         ast_bool_values?
+  device_state_filter  String?          @db.VarChar(256)
+  mailbox_state        ast_bool_values?
+  mailbox_state_filter String?          @db.VarChar(256)
+
+  @@index([id], map: "ps_asterisk_publications_id")
+}
+
+model ps_inbound_publications {
+  id                         String  @unique @db.VarChar(255)
+  endpoint                   String? @db.VarChar(255)
+  event_asterisk_devicestate String? @map("event_asterisk-devicestate") @db.VarChar(40)
+  event_asterisk_mwi         String? @map("event_asterisk-mwi") @db.VarChar(40)
+
+  @@index([id], map: "ps_inbound_publications_id")
+}
+
+model ps_outbound_publishes {
+  id                String           @unique @db.VarChar(255)
+  expiration        Int?
+  outbound_auth     String?          @db.VarChar(255)
+  outbound_proxy    String?          @db.VarChar(256)
+  server_uri        String?          @db.VarChar(256)
+  from_uri          String?          @db.VarChar(256)
+  to_uri            String?          @db.VarChar(256)
+  event             String?          @db.VarChar(40)
+  max_auth_attempts Int?
+  transport         String?          @db.VarChar(40)
+  multi_user        ast_bool_values?
+  body              String?          @map("@body") @db.VarChar(40)
+  context           String?          @map("@context") @db.VarChar(256)
+  exten             String?          @map("@exten") @db.VarChar(256)
+
+  @@index([id], map: "ps_outbound_publishes_id")
+}
+

@@ -1,0 +1,19 @@
+model ps_subscription_persistence {
+  id             String           @unique @db.VarChar(40)
+  packet         String?          @db.VarChar(2048)
+  src_name       String?          @db.VarChar(128)
+  src_port       Int?
+  transport_key  String?          @db.VarChar(64)
+  local_name     String?          @db.VarChar(128)
+  local_port     Int?
+  cseq           Int?
+  tag            String?          @db.VarChar(128)
+  endpoint       String?          @db.VarChar(40)
+  expires        Int?
+  contact_uri    String?          @db.VarChar(256)
+  prune_on_boot  ast_bool_values?
+  generator_data String?
+
+  @@index([id], map: "ps_subscription_persistence_id")
+}
+

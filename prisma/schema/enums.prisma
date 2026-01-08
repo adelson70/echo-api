@@ -1,0 +1,32 @@
+enum ast_bool_values {
+  // 0 @map("0")
+  // 1 @map("1")
+  off
+  on
+  false
+  true
+  no
+  yes
+}
+
+enum yes_no_values {
+  yes
+  no
+}
+
+enum yesno_values {
+  yes
+  no
+}
+
+enum type_values {
+  friend
+  user
+  peer
+}
+
+enum sha_hash_values {
+  SHA_1   @map("SHA-1")
+  SHA_256 @map("SHA-256")
+}
+

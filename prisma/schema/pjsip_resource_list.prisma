@@ -1,0 +1,11 @@
+model ps_resource_list {
+  id                          String           @unique @db.VarChar(40)
+  list_item                   String?          @db.VarChar(2048)
+  event                       String?          @db.VarChar(40)
+  full_state                  ast_bool_values?
+  notification_batch_interval Int?
+  resource_display_name       ast_bool_values?
+
+  @@index([id], map: "ps_resource_list_id")
+}
+

@@ -1,0 +1,22 @@
+model ps_aors {
+  id                   String           @unique @db.VarChar(255)
+  contact              String?          @db.VarChar(255)
+  default_expiration   Int?
+  mailboxes            String?          @db.VarChar(80)
+  max_contacts         Int?
+  minimum_expiration   Int?
+  remove_existing      ast_bool_values?
+  qualify_frequency    Int?
+  authenticate_qualify ast_bool_values?
+  maximum_expiration   Int?
+  outbound_proxy       String?          @db.VarChar(255)
+  support_path         ast_bool_values?
+  qualify_timeout      Float?
+  voicemail_extension  String?          @db.VarChar(40)
+  remove_unavailable   ast_bool_values?
+  qualify_2xx_only     ast_bool_values?
+
+  @@index([id], map: "ps_aors_id")
+  @@index([qualify_frequency, contact], map: "ps_aors_qualifyfreq_contact")
+}
+

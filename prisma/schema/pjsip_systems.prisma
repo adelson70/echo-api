@@ -1,0 +1,17 @@
+model ps_systems {
+  id                          String           @unique @db.VarChar(40)
+  timer_t1                    Int?
+  timer_b                     Int?
+  compact_headers             ast_bool_values?
+  threadpool_initial_size     Int?
+  threadpool_auto_increment   Int?
+  threadpool_idle_timeout     Int?
+  threadpool_max_size         Int?
+  disable_tcp_switch          ast_bool_values?
+  follow_early_media_fork     ast_bool_values?
+  accept_multiple_sdp_answers ast_bool_values?
+  disable_rport               ast_bool_values?
+
+  @@index([id], map: "ps_systems_id")
+}
+

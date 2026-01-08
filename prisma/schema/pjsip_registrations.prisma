@@ -1,0 +1,27 @@
+model ps_registrations {
+  id                       String                       @unique @db.VarChar(255)
+  auth_rejection_permanent ast_bool_values?
+  client_uri               String?                      @db.VarChar(255)
+  contact_user             String?                      @db.VarChar(40)
+  expiration               Int?
+  max_retries              Int?
+  outbound_auth            String?                      @db.VarChar(255)
+  outbound_proxy           String?                      @db.VarChar(255)
+  retry_interval           Int?
+  forbidden_retry_interval Int?
+  server_uri               String?                      @db.VarChar(255)
+  transport                String?                      @db.VarChar(40)
+  support_path             ast_bool_values?
+  fatal_retry_interval     Int?
+  line                     ast_bool_values?
+  endpoint                 String?                      @db.VarChar(255)
+  support_outbound         ast_bool_values?
+  contact_header_params    String?                      @db.VarChar(255)
+  max_random_initial_delay Int?
+  security_negotiation     security_negotiation_values?
+  security_mechanisms      String?                      @db.VarChar(512)
+  user_agent               String?                      @db.VarChar(255)
+
+  @@index([id], map: "ps_registrations_id")
+}
+

@@ -1,0 +1,23 @@
+model ps_contacts {
+  id                   String           @unique @db.VarChar(255)
+  uri                  String?          @db.VarChar(511)
+  expiration_time      BigInt?
+  qualify_frequency    Int?
+  outbound_proxy       String?          @db.VarChar(255)
+  path                 String?
+  user_agent           String?          @db.VarChar(255)
+  qualify_timeout      Float?
+  reg_server           String?          @db.VarChar(255)
+  authenticate_qualify ast_bool_values?
+  via_addr             String?          @db.VarChar(40)
+  via_port             Int?
+  call_id              String?          @db.VarChar(255)
+  endpoint             String?          @db.VarChar(255)
+  prune_on_boot        ast_bool_values?
+  qualify_2xx_only     ast_bool_values?
+
+  @@unique([id, reg_server], map: "ps_contacts_uq")
+  @@index([id], map: "ps_contacts_id")
+  @@index([qualify_frequency, expiration_time], map: "ps_contacts_qualifyfreq_exp")
+}
+

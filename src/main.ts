@@ -1,0 +1,93 @@
+process.loadEnvFile();
+
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+import { Logger } from '@nestjs/common';
+import { EnvironmentValidator } from './infra/config/env';
+import helmet from 'helmet';
+import { RateLimitGuard } from './common/guards/rate-limit.guard';
+import gracefulShutdown from 'http-graceful-shutdown';
+import { z } from 'zod';
+import basicAuth from 'express-basic-auth';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import { JwtService } from '@nestjs/jwt';
+
+z.config(z.locales.pt());
+
+async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+
+  EnvironmentValidator.validate();
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    // credentials: true,
+  });
+
+  // Configurar arquivos estáticos para o Swagger
+  app.useStaticAssets(join(process.cwd(), 'public'), {
+    prefix: '/public/',
+  });
+
+  // Configurar Helmet com exceções para o Swagger
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [`'self'`],
+          styleSrc: [`'self'`, `'unsafe-inline'`],
+          scriptSrc: [`'self'`, `'unsafe-inline'`, `'unsafe-eval'`],
+          imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+        },
+      },
+    }),
+  );
+
+  app.useGlobalGuards(new RateLimitGuard());
+
+  if (isDevelopment) {
+    app.use(
+      ['/docs', '/docs-json'],
+      basicAuth({
+        challenge: true,
+        users: {
+          [process.env.SWAGGER_USER as string]: process.env
+            .SWAGGER_PASS as string,
+        },
+      }),
+    );
+  
+    const config = new DocumentBuilder()
+      .setTitle('Echo API')
+      .setDescription('Documentação da API Echo')
+      .setVersion('1.0')
+      .build();
+  
+    const document = SwaggerModule.createDocument(app, config);
+  
+    const swaggerCustomOptions = {
+      swaggerOptions: {
+        persistAuthorization: true,
+      },
+    };
+  
+    SwaggerModule.setup('/docs', app, document, swaggerCustomOptions);
+  
+  }
+    
+  gracefulShutdown(app.getHttpServer());
+
+  await app.listen(process.env.PORT ?? 5000);
+
+  logger.log(`🚀 Aplicação iniciada com sucesso!`);
+}
+
+void bootstrap();

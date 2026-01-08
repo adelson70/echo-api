@@ -1,0 +1,11 @@
+model extensions {
+  id       BigInt @id @default(autoincrement())
+  context  String @db.VarChar(40)
+  exten    String @db.VarChar(40)
+  priority Int
+  app      String @db.VarChar(40)
+  appdata  String @db.VarChar(256)
+
+  @@unique([context, exten, priority])
+}
+

@@ -1,0 +1,42 @@
+model voicemail {
+  uniqueid        Int            @id @default(autoincrement())
+  context         String         @db.VarChar(80)
+  mailbox         String         @db.VarChar(80)
+  password        String         @db.VarChar(80)
+  fullname        String?        @db.VarChar(80)
+  alias           String?        @db.VarChar(80)
+  email           String?        @db.VarChar(80)
+  pager           String?        @db.VarChar(80)
+  attach          yes_no_values?
+  attachfmt       String?        @db.VarChar(10)
+  serveremail     String?        @db.VarChar(80)
+  language        String?        @db.VarChar(20)
+  tz              String?        @db.VarChar(30)
+  deletevoicemail yes_no_values?
+  saycid          yes_no_values?
+  sendvoicemail   yes_no_values?
+  review          yes_no_values?
+  tempgreetwarn   yes_no_values?
+  operator        yes_no_values?
+  envelope        yes_no_values?
+  sayduration     Int?
+  forcename       yes_no_values?
+  forcegreetings  yes_no_values?
+  callback        String?        @db.VarChar(80)
+  dialout         String?        @db.VarChar(80)
+  exitcontext     String?        @db.VarChar(80)
+  maxmsg          Int?
+  volgain         Decimal?       @db.Decimal(5, 2)
+  imapuser        String?        @db.VarChar(80)
+  imappassword    String?        @db.VarChar(80)
+  imapserver      String?        @db.VarChar(80)
+  imapport        String?        @db.VarChar(8)
+  imapflags       String?        @db.VarChar(80)
+  stamp           DateTime?      @db.Timestamp(6)
+
+  @@index([context], map: "voicemail_context")
+  @@index([imapuser], map: "voicemail_imapuser")
+  @@index([mailbox], map: "voicemail_mailbox")
+  @@index([mailbox, context], map: "voicemail_mailbox_context")
+}
+
