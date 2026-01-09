@@ -1,9 +1,9 @@
 import { IsString, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
-import { ApiProperty, PickType } from "@nestjs/swagger";
+import { ApiProperty, OmitType, PartialType, PickType } from "@nestjs/swagger";
+import { PasswordValidator } from "src/common/decorators/password.decorator";
 
 export class RamalDto {
     @IsString()
-    @IsNotEmpty()
     @ApiProperty({
         description: 'Usuário do ramal',
         example: '1001',
@@ -11,29 +11,27 @@ export class RamalDto {
     usuario: string;
 
     @IsString()
-    @IsNotEmpty()
     @ApiProperty({
         description: 'Senha do ramal',
-        example: '123456',
+        example: 'd8J92#kH4!l',
     })
+    @PasswordValidator()
     senha: string;
 
     @IsString()
-    @IsNotEmpty()
     @ApiProperty({
         description: 'Regra de saída do ramal',
-        example: 'externo',
+        example: 'geral',
     })
     regraSaida: string;
 
     @IsNumber()
-    @IsNotEmpty()
     @ApiProperty({
         description: 'Máximo de contatos do ramal',
         example: 10,
     })
     maximoContatos: number;
-
+    
     @IsString()
     @IsOptional()
     @ApiProperty({
@@ -43,8 +41,33 @@ export class RamalDto {
     dod: string | null;
 }
 
-export class CreateRamalDto extends RamalDto {}
-export class UpdateRamalDto extends RamalDto {}
+export class CreateRamalDto extends RamalDto {
+    @IsNotEmpty()
+    declare usuario: string;
+
+    @IsNotEmpty()
+    declare senha: string;
+
+    @IsNotEmpty()
+    declare regraSaida: string;
+
+    @IsNotEmpty()
+    declare maximoContatos: number;
+}
+
+export class UpdateRamalDto extends PartialType(
+    OmitType(RamalDto, ['usuario'] as const)
+) {
+    @IsOptional()
+    declare senha: string;
+
+    @IsOptional()
+    declare regraSaida: string;
+
+    @IsOptional()
+    declare maximoContatos: number;
+}
+
 export class DeleteRamalDto extends PickType(RamalDto, ['usuario']) {}
 export class FindRamalDto extends PickType(RamalDto, ['usuario']) {}
 export class ListRamalDto extends PickType(RamalDto, ['usuario']) {}

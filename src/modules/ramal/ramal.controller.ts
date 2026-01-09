@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RamalService } from "./ramal.service";
-import { CreateRamalDto, FindRamalDto, ListRamalDto } from "./dto/ramal.dto";
+import { CreateRamalDto, FindRamalDto, ListRamalDto, UpdateRamalDto } from "./dto/ramal.dto";
 
 @ApiTags('Ramal')
 @Controller('ramal')
@@ -50,4 +50,17 @@ export class RamalController {
     async delete(@Param('usuario') usuario: string): Promise<void> {
         return await this.ramalService.delete(usuario);
     }
+
+    @Put(':usuario')
+    @ApiOperation({ summary: 'Atualizar um ramal' })
+    @ApiResponse({
+        status: 200,
+        description: 'Ramal atualizado com sucesso.',
+        type: UpdateRamalDto,
+    })
+    async update(@Param('usuario') usuario: string, @Body() ramalDto: UpdateRamalDto): Promise<UpdateRamalDto> {
+        return await this.ramalService.update(usuario, ramalDto);
+    }
+
+
 }

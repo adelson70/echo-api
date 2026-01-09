@@ -30,8 +30,6 @@ import { Reflector } from '@nestjs/core';
     GrupoDeCapturaModule,
     RelatorioModule,
     SistemaModule,
-  
-  
   ],
   controllers: [AppController],
   providers: [

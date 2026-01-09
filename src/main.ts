@@ -3,7 +3,7 @@ process.loadEnvFile();
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { EnvironmentValidator } from './infra/config/env';
 import helmet from 'helmet';
 import { RateLimitGuard } from './common/guards/rate-limit.guard';
@@ -52,6 +52,11 @@ async function bootstrap() {
   );
 
   app.useGlobalGuards(new RateLimitGuard());
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: true,
+  }));
 
   if (isDevelopment) {
     app.use(
