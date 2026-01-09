@@ -11,6 +11,7 @@ import { TroncoModule } from './modules/tronco/tronco.module';
 import { FilaModule } from './modules/fila/fila.module';
 import { UsuarioModule } from './modules/usuario/usuario.module';
 import { GrupoDeCapturaModule } from './modules/grupo-de-captura/grupo-de-captura.module';
+import { RelatorioModule } from './modules/relatorio/relatorio.module';
 
 @Module({
   imports: [
@@ -25,6 +26,8 @@ import { GrupoDeCapturaModule } from './modules/grupo-de-captura/grupo-de-captur
     FilaModule,
     UsuarioModule,
     GrupoDeCapturaModule,
+    RelatorioModule,
+  
   ],
   controllers: [AppController],
   providers: [
