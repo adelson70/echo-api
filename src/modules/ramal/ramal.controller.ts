@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RamalService } from "./ramal.service";
 import { CreateRamalDto, FindRamalDto, ListRamalDto } from "./dto/ramal.dto";
@@ -39,5 +39,15 @@ export class RamalController {
     })
     async create(@Body() ramalDto: CreateRamalDto): Promise<CreateRamalDto> {
         return await this.ramalService.create(ramalDto);
+    }
+
+    @Delete(':usuario')
+    @ApiOperation({ summary: 'Excluir um ramal' })
+    @ApiResponse({
+        status: 200,
+        description: 'Ramal excluído com sucesso.',
+    })
+    async delete(@Param('usuario') usuario: string): Promise<void> {
+        return await this.ramalService.delete(usuario);
     }
 }

@@ -13,7 +13,7 @@ model ps_auths {
   supported_algorithms_uas String?                    @db.VarChar(1024)
   supported_algorithms_uac String?                    @db.VarChar(1024)
 
-  endpoints ps_endpoints? @relation(fields: [id], references: [id])
+  endpoints ps_endpoints? @relation(fields: [id], references: [id], onDelete: Cascade)
 
   @@index([id], map: "ps_auths_id")
 }

@@ -129,6 +129,39 @@ export class RamalService {
         return ramalDto
     }
 
+    async delete(usuario: string): Promise<void> {
+        try {
+            const ramalExiste = await this.prisma.ps_endpoints.findFirst({
+                where: {
+                    id: usuario
+                }
+            })
+
+            if (!ramalExiste) throw new NotFoundException(`Ramal ${usuario} não encontrado`);
+
+            await this.prisma.$transaction(async (tx) => {
+                await tx.ps_endpoints.delete({
+                    where: {
+                        id: usuario
+                    },
+                    include: {
+                        aorsRelation: true,
+                        authsRelation: true,
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                    throw new InternalServerErrorException('Erro na exclusão de ramal');
+                });
+            })
+            
+            
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro na exclusão de ramal');
+        }
+    }
+
     private getDod(setVar: string): string | null {
         if (!setVar) return null;
         const setVarArray = setVar.split(';');
