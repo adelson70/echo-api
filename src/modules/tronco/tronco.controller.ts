@@ -3,7 +3,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { TroncoService } from "./tronco.service";
 
 @ApiTags('Tronco')
-@Controller()
+@Controller('tronco')
 export class TroncoController {
     constructor(private readonly troncoService: TroncoService) {}
 

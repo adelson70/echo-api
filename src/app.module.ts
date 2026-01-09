@@ -8,6 +8,7 @@ import { AuthGuard } from './common/guards/unified-auth.guard';
 import { RamalModule } from './modules/ramal/ramal.module';
 import { RegraModule } from './modules/regra/regra.module';
 import { TroncoModule } from './modules/tronco/tronco.module';
+import { FilaModule } from './modules/fila/fila.module';
 
 @Module({
   imports: [
@@ -19,6 +20,8 @@ import { TroncoModule } from './modules/tronco/tronco.module';
     RegraModule,
     RamalModule,
     TroncoModule,
+    FilaModule,
+  
   ],
   controllers: [AppController],
   providers: [
