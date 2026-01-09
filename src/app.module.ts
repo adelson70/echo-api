@@ -12,6 +12,7 @@ import { FilaModule } from './modules/fila/fila.module';
 import { UsuarioModule } from './modules/usuario/usuario.module';
 import { GrupoDeCapturaModule } from './modules/grupo-de-captura/grupo-de-captura.module';
 import { RelatorioModule } from './modules/relatorio/relatorio.module';
+import { SistemaModule } from './modules/sistema/sistema.module';
 
 @Module({
   imports: [
@@ -27,6 +28,8 @@ import { RelatorioModule } from './modules/relatorio/relatorio.module';
     UsuarioModule,
     GrupoDeCapturaModule,
     RelatorioModule,
+    SistemaModule,
+  
   
   ],
   controllers: [AppController],
