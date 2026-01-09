@@ -5,4 +5,3 @@ model stir_tn {
   attest_level     String?          @db.VarChar(1)
   send_mky         ast_bool_values?
 }
-

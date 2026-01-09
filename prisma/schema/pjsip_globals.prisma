@@ -37,4 +37,3 @@ enum pjsip_taskprocessor_overload_trigger_values {
   global
   pjsip_only
 }
-

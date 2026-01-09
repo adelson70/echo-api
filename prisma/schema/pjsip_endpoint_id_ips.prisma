@@ -8,4 +8,3 @@ model ps_endpoint_id_ips {
 
   @@index([id], map: "ps_endpoint_id_ips_id")
 }
-

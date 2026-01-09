@@ -16,4 +16,3 @@ model ps_subscription_persistence {
 
   @@index([id], map: "ps_subscription_persistence_id")
 }
-

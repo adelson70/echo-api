@@ -14,4 +14,3 @@ model meetme {
 
   @@index([confno, starttime, endtime], map: "meetme_confno_start_end")
 }
-

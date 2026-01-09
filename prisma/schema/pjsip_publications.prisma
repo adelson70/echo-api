@@ -37,4 +37,3 @@ model ps_outbound_publishes {
 
   @@index([id], map: "ps_outbound_publishes_id")
 }
-

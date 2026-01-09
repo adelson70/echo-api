@@ -16,7 +16,8 @@ model ps_aors {
   remove_unavailable   ast_bool_values?
   qualify_2xx_only     ast_bool_values?
 
+  endpoints ps_endpoints? @relation(fields: [id], references: [id])
+
   @@index([id], map: "ps_aors_id")
   @@index([qualify_frequency, contact], map: "ps_aors_qualifyfreq_contact")
 }
-

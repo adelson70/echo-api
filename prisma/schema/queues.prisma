@@ -98,4 +98,3 @@ enum queue_strategy_values {
   wrandom
   rrordered
 }
-

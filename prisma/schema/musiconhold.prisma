@@ -28,4 +28,3 @@ enum moh_mode_values {
   quietmp3
   playlist
 }
-

@@ -4,4 +4,3 @@ model ps_domain_aliases {
 
   @@index([id], map: "ps_domain_aliases_id")
 }
-

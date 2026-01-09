@@ -14,4 +14,3 @@ model ps_systems {
 
   @@index([id], map: "ps_systems_id")
 }
-

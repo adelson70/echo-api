@@ -20,4 +20,3 @@ model ps_contacts {
   @@index([id], map: "ps_contacts_id")
   @@index([qualify_frequency, expiration_time], map: "ps_contacts_qualifyfreq_exp")
 }
-

@@ -148,4 +148,3 @@ enum sip_callingpres_values {
   prohib_failed_screen
   prohib
 }
-

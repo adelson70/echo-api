@@ -24,4 +24,3 @@ model ps_registrations {
 
   @@index([id], map: "ps_registrations_id")
 }
-

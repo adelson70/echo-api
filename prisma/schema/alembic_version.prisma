@@ -1,4 +1,3 @@
 model alembic_version_config {
   version_num String @id(map: "alembic_version_config_pkc") @db.VarChar(32)
 }
-

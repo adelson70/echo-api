@@ -29,4 +29,3 @@ model ps_transports {
 
   @@index([id], map: "ps_transports_id")
 }
-

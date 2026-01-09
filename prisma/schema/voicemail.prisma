@@ -39,4 +39,3 @@ model voicemail {
   @@index([mailbox], map: "voicemail_mailbox")
   @@index([mailbox, context], map: "voicemail_mailbox_context")
 }
-

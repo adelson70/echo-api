@@ -144,6 +144,9 @@ model ps_endpoints {
   tenantid                           String?                                     @db.VarChar(80)
   suppress_moh_on_sendonly           ast_bool_values?
 
+  authsRelation ps_auths?
+  aorsRelation  ps_aors?
+
   @@index([id], map: "ps_endpoints_id")
 }
 
@@ -258,4 +261,3 @@ enum security_negotiation_values {
   no
   mediasec
 }
-

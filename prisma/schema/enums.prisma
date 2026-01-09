@@ -29,4 +29,3 @@ enum sha_hash_values {
   SHA_1   @map("SHA-1")
   SHA_256 @map("SHA-256")
 }
-
