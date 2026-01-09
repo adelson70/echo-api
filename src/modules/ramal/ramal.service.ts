@@ -1,4 +1,4 @@
-import { HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/infra/database/prisma/prisma.service";
 import { CreateRamalDto, FindRamalDto, ListRamalDto, RamalDto } from "./dto/ramal.dto";
 
@@ -78,6 +78,47 @@ export class RamalService {
 
     async create(ramalDto: CreateRamalDto): Promise<CreateRamalDto> {
         try {
+
+            const ramalExiste = await this.prisma.ps_endpoints.findFirst({
+                where: {
+                    id: ramalDto.usuario
+                }
+            })
+
+            if (ramalExiste) throw new BadRequestException(`Ramal ${ramalDto.usuario} já existe`);
+
+            await this.prisma.$transaction(async (tx) => {
+                await tx.ps_endpoints.create({
+                    data: {
+                        id: ramalDto.usuario,
+                        context: ramalDto.regraSaida,
+                        set_var: `dod=${ramalDto.dod}`,
+                        transport: process.env.TRANSPORT,
+                        aors: ramalDto.usuario,
+                        auth: ramalDto.usuario,
+                        disallow: 'all',
+                        allow: 'ulaw,alaw',
+                        callerid: ramalDto.usuario,
+                        direct_media: 'no',
+                        force_rport: 'yes',
+                        rtp_symmetric: 'yes',
+                        aorsRelation: {
+                            create: {
+                                max_contacts: ramalDto.maximoContatos
+                            }
+                        },
+                        authsRelation: {
+                            create: {
+                                username: ramalDto.usuario,
+                                password: ramalDto.senha, 
+                                auth_type: 'userpass'
+                            }
+                        }
+                    }
+                }).catch(() => {
+                    throw new InternalServerErrorException('Erro na criação de ramal');
+                });
+            })
             
         } catch (error) {
             if (error instanceof HttpException) throw error;

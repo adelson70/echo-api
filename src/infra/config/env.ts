@@ -14,6 +14,7 @@ export class EnvironmentValidator {
       'DATABASE_URL',
       'JWT_SECRET_AT',
       'JWT_SECRET_RT',
+      'TRANSPORT',
     ];
 
     const missingVars: string[] = [];
