@@ -1,4 +1,10 @@
-import { CallHandler, Injectable, NestInterceptor } from '@nestjs/common';
+import { 
+  CallHandler, 
+  ExecutionContext, 
+  Injectable, 
+  NestInterceptor,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -13,7 +19,38 @@ function hasMessage<T = unknown>(value: unknown): value is WithMessage<T> {
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
-  intercept(_, next: CallHandler<T>): Observable<any> {
+  constructor(private readonly reflector: Reflector) {}
+
+  intercept(context: ExecutionContext, next: CallHandler<T>): Observable<any> {
+    const handler = context.getHandler();
+    const response = context.switchToHttp().getResponse();
+    const statusCode = response.statusCode || 200;
+
+    // Busca os metadados do Swagger
+    const swaggerMetadata = this.reflector.getAll('swagger/apiResponse', [handler]) || 
+                           this.reflector.getAll('swagger/api_response', [handler]) ||
+                           this.reflector.getAll('apiResponse', [handler]);
+    
+    // Extrai a description do status code correspondente
+    let message = 'Operação realizada com sucesso';
+    
+    if (Array.isArray(swaggerMetadata)) {
+      // Itera sobre o array de objetos
+      for (const responseObj of swaggerMetadata) {
+        if (responseObj && typeof responseObj === 'object') {
+          // Procura pela chave que corresponde ao status code (como string)
+          const statusKey = String(statusCode);
+          if (statusKey in responseObj) {
+            const responseData = responseObj[statusKey];
+            if (responseData && typeof responseData === 'object' && 'description' in responseData) {
+              message = responseData.description as string;
+              break;
+            }
+          }
+        }
+      }
+    }
+
     return next.handle().pipe(
       map((data) => {
         if (hasMessage(data)) {
@@ -25,10 +62,10 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
           };
         }
 
-        // caso não tenha mensagem, usa padrão
+        // Usa a description do @ApiResponse se disponível, senão usa padrão
         return {
           success: true,
-          message: 'Operação realizada com sucesso',
+          message,
           data: data || null,
         };
       }),

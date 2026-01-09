@@ -13,6 +13,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
 import { GrupoDeCapturaModule } from './modules/grupo-de-captura/grupo-de-captura.module';
 import { RelatorioModule } from './modules/relatorio/relatorio.module';
 import { SistemaModule } from './modules/sistema/sistema.module';
+import { Reflector } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { SistemaModule } from './modules/sistema/sistema.module';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
+    Reflector,
   ],
 })
 export class AppModule {}

@@ -1,6 +1,6 @@
 import { HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/infra/database/prisma/prisma.service";
-import { FindRamalDto, ListRamalDto, RamalDto } from "./dto/ramal.dto";
+import { CreateRamalDto, FindRamalDto, ListRamalDto, RamalDto } from "./dto/ramal.dto";
 
 @Injectable()
 export class RamalService {
@@ -74,6 +74,18 @@ export class RamalService {
 
             throw new InternalServerErrorException('Erro na busca de ramal');
         }
+    }
+
+    async create(ramalDto: CreateRamalDto): Promise<CreateRamalDto> {
+        try {
+            
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro na criação de ramal');
+        }
+
+        return ramalDto
     }
 
     private getDod(setVar: string): string | null {
