@@ -21,11 +21,27 @@ def to_camel_case(name: str) -> str:
 
 def to_kebab_case(name: str) -> str:
     """Converte nome para kebab-case"""
-    # Insere hífen antes de letras maiúsculas (exceto a primeira)
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', name)
-    # Insere hífen antes de letras maiúsculas que seguem minúsculas ou números
-    s2 = re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1)
-    return s2.lower()
+    # Primeiro, substitui espaços, hífens e underscores por um separador temporário
+    # e divide em palavras
+    words = re.split(r'[\s\-_]+', name)
+    # Remove palavras vazias
+    words = [word for word in words if word]
+    
+    # Se não houver palavras, retorna o nome em minúsculas
+    if not words:
+        return name.lower()
+    
+    # Se houver apenas uma palavra, tenta dividir por letras maiúsculas
+    if len(words) == 1:
+        word = words[0]
+        # Insere hífen antes de letras maiúsculas (exceto a primeira)
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', word)
+        # Insere hífen antes de letras maiúsculas que seguem minúsculas ou números
+        s2 = re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1)
+        return s2.lower()
+    
+    # Se houver múltiplas palavras, junta com hífens
+    return '-'.join(word.lower() for word in words)
 
 def create_module_files(module_name: str, base_path: Path):
     """Cria todos os arquivos do módulo"""
