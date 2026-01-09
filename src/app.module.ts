@@ -6,6 +6,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AuthGuard } from './common/guards/unified-auth.guard';
 import { RamalModule } from './modules/ramal/ramal.module';
+import { RegraModule } from './modules/regra/regra.module';
 @Module({
   imports: [
     PrismaModule,
@@ -13,6 +14,7 @@ import { RamalModule } from './modules/ramal/ramal.module';
       global: true,
       secret: process.env.JWT_SECRET,
     }),
+    RegraModule,
     RamalModule,
   ],
   controllers: [AppController],
