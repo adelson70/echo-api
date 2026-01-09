@@ -1,14 +1,18 @@
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "src/infra/database/prisma/prisma.service";
+import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
+import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
 import { CreateRamalDto, FindRamalDto, ListRamalDto, RamalDto, UpdateRamalDto } from "./dto/ramal.dto";
 
 @Injectable()
 export class RamalService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prismaRead: PrismaReadService, 
+        private readonly prismaWrite: PrismaWriteService) 
+    {}
 
     async list(): Promise<ListRamalDto[]> {
         try {
-            const ramais = await this.prisma.ps_endpoints.findMany({
+            const ramais = await this.prismaRead.ps_endpoints.findMany({
                 select: {
                     id: true,
                     context: true,
@@ -42,7 +46,7 @@ export class RamalService {
 
     async find(usuario: string): Promise<FindRamalDto> {
         try {
-            const ramal = await this.prisma.ps_endpoints.findFirst({
+            const ramal = await this.prismaRead.ps_endpoints.findFirst({
                 where: {
                     id: usuario
                 },
@@ -79,7 +83,7 @@ export class RamalService {
     async create(ramalDto: CreateRamalDto): Promise<CreateRamalDto> {
         try {
 
-            const ramalExiste = await this.prisma.ps_endpoints.findFirst({
+            const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
                 where: {
                     id: ramalDto.usuario
                 }
@@ -87,7 +91,7 @@ export class RamalService {
 
             if (ramalExiste) throw new BadRequestException(`Ramal ${ramalDto.usuario} já existe`);
 
-            await this.prisma.$transaction(async (tx) => {
+            await this.prismaWrite.$transaction(async (tx) => {
                 await tx.ps_endpoints.create({
                     data: {
                         id: ramalDto.usuario,
@@ -133,7 +137,7 @@ export class RamalService {
         try {
             if (Object.keys(ramalDto).length === 0) throw new BadRequestException('Nenhum dado para atualizar');
             
-            const ramalExiste = await this.prisma.ps_endpoints.findFirst({
+            const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
                 where: { id: usuario },
                 select: {
                     id: true,
@@ -170,7 +174,7 @@ export class RamalService {
                 },
             }
 
-            return await this.prisma.$transaction(async (tx) => {
+            return await this.prismaWrite.$transaction(async (tx) => {
                 const ramalAtualizado = await tx.ps_endpoints.update({
                     where: {
                         id: usuario
@@ -213,10 +217,10 @@ export class RamalService {
             throw new InternalServerErrorException('Erro na atualização de ramal');
         }
     }
-    
+
     async delete(usuario: string): Promise<void> {
         try {
-            const ramalExiste = await this.prisma.ps_endpoints.findFirst({
+            const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
                 where: {
                     id: usuario
                 }
@@ -224,7 +228,7 @@ export class RamalService {
 
             if (!ramalExiste) throw new NotFoundException(`Ramal ${usuario} não encontrado`);
 
-            await this.prisma.$transaction(async (tx) => {
+            await this.prismaWrite.$transaction(async (tx) => {
                 await tx.ps_endpoints.delete({
                     where: {
                         id: usuario

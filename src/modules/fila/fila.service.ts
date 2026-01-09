@@ -1,8 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/infra/database/prisma/prisma.service";
+import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
+import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
 
 @Injectable()
 export class FilaService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prismaRead: PrismaReadService, 
+        private readonly prismaWrite: PrismaWriteService) 
+    {}
 
 }

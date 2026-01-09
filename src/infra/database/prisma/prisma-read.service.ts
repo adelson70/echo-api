@@ -8,11 +8,11 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 @Injectable()
-export class PrismaService
+export class PrismaReadService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  private readonly logger = new Logger(PrismaService.name);
+  private readonly logger = new Logger(PrismaReadService.name);
 
   constructor() {
     const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
@@ -22,9 +22,9 @@ export class PrismaService
   async onModuleInit(): Promise<void> {
     try {
       await this.$connect();
-      this.logger.log('✅ Conexão com banco de dados estabelecida!');
+      this.logger.log('✅ Conexão de LEITURA com banco de dados estabelecida!');
     } catch (error) {
-      this.logger.error('❌ Erro ao conectar com o banco de dados:', error);
+      this.logger.error('❌ Erro ao conectar com o banco de dados de LEITURA:', error);
       throw error;
     }
   }
@@ -32,10 +32,10 @@ export class PrismaService
   async onModuleDestroy(): Promise<void> {
     try {
       await this.$disconnect();
-      this.logger.log('🔌 Conexão com banco de dados encerrada!');
+      this.logger.log('🔌 Conexão de LEITURA com banco de dados encerrada!');
     } catch (error) {
       this.logger.error(
-        '❌ Erro ao encerrar conexão com o banco de dados',
+        '❌ Erro ao encerrar conexão com o banco de dados de LEITURA',
         error,
       );
       throw error;
