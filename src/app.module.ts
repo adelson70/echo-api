@@ -7,6 +7,8 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { AuthGuard } from './common/guards/unified-auth.guard';
 import { RamalModule } from './modules/ramal/ramal.module';
 import { RegraModule } from './modules/regra/regra.module';
+import { TroncoModule } from './modules/tronco/tronco.module';
+
 @Module({
   imports: [
     PrismaModule,
@@ -16,6 +18,7 @@ import { RegraModule } from './modules/regra/regra.module';
     }),
     RegraModule,
     RamalModule,
+    TroncoModule,
   ],
   controllers: [AppController],
   providers: [

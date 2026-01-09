@@ -7,7 +7,7 @@ import { RegraService } from "./regra.service";
 export class RegraController {
     constructor(private readonly regraService: RegraService) {}
 
-    @Get()
+    @Get('regra')
     retorna(){
         return 'regra ok';
     }
