@@ -1,7 +1,7 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Param } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RamalService } from "./ramal.service";
-import { ListRamalDto } from "./dto/ramal.dto";
+import { FindRamalDto, ListRamalDto } from "./dto/ramal.dto";
 
 @ApiTags('Ramal')
 @Controller('ramal')
@@ -17,5 +17,16 @@ export class RamalController {
     })
     async list(): Promise<ListRamalDto[]> {
         return this.ramalService.list();
+    }
+
+    @Get(':usuario')
+    @ApiOperation({ summary: 'Buscar um ramal pelo usuário' })
+    @ApiResponse({
+        status: 200,
+        description: 'Ramal encontrado',
+        type: FindRamalDto,
+    })
+    async find(@Param('usuario') usuario: string): Promise<FindRamalDto> {
+        return this.ramalService.find(usuario);
     }
 }

@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { ApiProperty, PickType } from "@nestjs/swagger";
 
-export class CreateRamalDto {
+export class RamalDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
@@ -40,12 +40,11 @@ export class CreateRamalDto {
         description: 'DOD do ramal',
         example: '55999999999',
     })
-    dod: string;
+    dod: string | null;
 }
-export class UpdateRamalDto extends CreateRamalDto {}
 
-export class DeleteRamalDto extends PickType(CreateRamalDto, ['usuario']) {}
-
-export class FindRamalDto extends PickType(CreateRamalDto, ['usuario']) {}
-
-export class ListRamalDto extends PickType(CreateRamalDto, ['usuario']) {}
+export class CreateRamalDto extends RamalDto {}
+export class UpdateRamalDto extends RamalDto {}
+export class DeleteRamalDto extends PickType(RamalDto, ['usuario']) {}
+export class FindRamalDto extends PickType(RamalDto, ['usuario']) {}
+export class ListRamalDto extends PickType(RamalDto, ['usuario']) {}
