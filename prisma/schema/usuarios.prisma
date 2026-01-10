@@ -1,0 +1,124 @@
+enum Modulos {
+    RAMAL
+    REGRA_DE_SAIDA
+    REGRA_DE_ENTRADA
+    TRONCO
+    FILA
+    GRUPO_DE_CAPTURA
+    USUARIO
+    RELATORIO
+    SISTEMA
+}
+
+enum LogActions {
+    LOGIN
+    LOGOUT
+    CRIOU
+    EDITOU
+    DELETADO
+}
+
+model Usuario {
+    id String @id @default(uuid()) @db.Uuid
+    nome String @db.VarChar(255)
+    email String @db.VarChar(255)
+    senha String @db.VarChar(255)
+    perfilId String @db.Uuid
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    perfil Perfil @relation(fields: [perfilId], references: [id])
+    permissoesUsuario PermissaoUsuario[]
+    logs Log[]
+
+    @@index([id], map: "usuario_id")
+    @@index([email], map: "usuario_email")
+    @@index([perfilId], map: "usuario_perfil_id")
+
+    @@map("usuarios")
+}
+
+model Perfil {
+    id String @id @default(uuid()) @db.Uuid
+    nome String @db.VarChar(255)
+    descricao String? @db.VarChar(255)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    usuarios Usuario[]
+    permissoes PermissaoPerfil[]
+
+    @@index([id], map: "perfil_id")
+    @@index([nome], map: "perfil_nome")
+
+    @@map("perfis")
+}
+
+model PermissaoPerfil {
+    id String @id @default(uuid()) @db.Uuid
+    modulo Modulos
+    perfilId String @db.Uuid
+    criar Boolean @default(true)
+    ler Boolean @default(true)
+    editar Boolean @default(true)
+    deletar Boolean @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    perfil Perfil @relation(fields: [perfilId], references: [id])
+
+    @@index([id], map: "permissao_id")
+    @@index([modulo], map: "permissao_modulo")
+    @@index([perfilId], map: "permissao_perfil_id")
+    @@index([criar], map: "permissao_perfil_criar")
+    @@index([ler], map: "permissao_perfil_ler")
+    @@index([editar], map: "permissao_perfil_editar")
+    @@index([deletar], map: "permissao_perfil_deletar")
+
+    @@map("permissao_perfis")
+}
+
+model PermissaoUsuario {
+    id String @id @default(uuid()) @db.Uuid
+    modulo Modulos
+    usuarioId String @db.Uuid
+    criar Boolean @default(true)
+    ler Boolean @default(true)
+    editar Boolean @default(true)
+    deletar Boolean @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    usuario Usuario @relation(fields: [usuarioId], references: [id])
+
+    @@index([id], map: "permissao_usuario_id")
+    @@index([modulo], map: "permissao_usuario_modulo")
+    @@index([usuarioId], map: "permissao_usuario_usuario_id")
+    @@index([criar], map: "permissao_usuario_criar")
+    @@index([ler], map: "permissao_usuario_ler")
+    @@index([editar], map: "permissao_usuario_editar")
+    @@index([deletar], map: "permissao_usuario_deletar")
+
+    @@map("permissao_usuarios")
+}
+
+model Log {
+    id String @id @default(uuid()) @db.Uuid
+    usuarioId String @db.Uuid
+    ip String @db.VarChar(255)
+    acao LogActions
+    modulo Modulos?
+    metaData Json?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    usuario Usuario @relation(fields: [usuarioId], references: [id])
+
+    @@index([id], map: "logs_id")
+    @@index([usuarioId], map: "logs_usuario_id")
+    @@index([acao], map: "logs_acao")
+    @@index([modulo], map: "logs_modulo")
+    @@index([ip], map: "logs_ip")
+
+    @@map("logs")
+}
