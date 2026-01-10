@@ -18,6 +18,12 @@ enum LogActions {
     DELETADO
 }
 
+enum LogStatus {
+    TENTATIVA
+    SUCESSO
+    FALHA
+}
+
 model Usuario {
     id String @id @default(uuid()) @db.Uuid
     nome String @db.VarChar(255)
@@ -106,6 +112,7 @@ model Log {
     id String @id @default(uuid()) @db.Uuid
     usuarioId String @db.Uuid
     ip String @db.VarChar(255)
+    status LogStatus
     acao LogActions
     modulo Modulos?
     metaData Json?
@@ -116,6 +123,7 @@ model Log {
 
     @@index([id], map: "logs_id")
     @@index([usuarioId], map: "logs_usuario_id")
+    @@index([status], map: "logs_status")
     @@index([acao], map: "logs_acao")
     @@index([modulo], map: "logs_modulo")
     @@index([ip], map: "logs_ip")
