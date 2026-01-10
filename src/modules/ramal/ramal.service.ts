@@ -135,30 +135,36 @@ export class RamalService {
 
         return ramalDto
     }
-    
+
     // RAMAIS QUE EXISTEM SERAO IGNORADOS
     async createLote(loteRamalDto: CreateLoteRamalDto): Promise<ListRamalDto[]> {
         try {
             const { ramalInicial, quantidadeRamais } = loteRamalDto;
-            const data: { novosRamais: string[], ramaisExistentes: any[] } = {
-                novosRamais: [],
+            const data: { ramaisNovos: string[], ramaisExistentes: string[] } = {
+                ramaisNovos: [],
                 ramaisExistentes: [],
             };
+            
+            const ramaisParaVerificar = Array.from({ length: quantidadeRamais }, (_, i) => `${Number(ramalInicial)+i}`);
 
-            for (let i=0; i<quantidadeRamais; i++) {
-                const ramal = `${Number(ramalInicial)+i}`;
-                const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
-                    where: { id: ramal }, select: { id: true }
-                });
-                if (!ramalExiste) data.novosRamais.push(ramal);
-                else data.ramaisExistentes.push(ramalExiste);
-            }
+            const ramaisExistentes = await this.prismaRead.ps_endpoints.findMany({
+                where: {
+                    id: {
+                        in: ramaisParaVerificar
+                    }
+                },
+                select: { id: true }
+            });
 
-            if (data.novosRamais.length === 0) throw new BadRequestException('Nenhum ramal para criar, todos os ramais já existem');
+            const idsExistentes = new Set(ramaisExistentes.map(r => r.id));
+            data.ramaisNovos = ramaisParaVerificar.filter(id => !idsExistentes.has(id));
+            data.ramaisExistentes = ramaisExistentes.map(r => r.id);
 
-            if (data.novosRamais.length > 0) {
+            if (data.ramaisNovos.length === 0) throw new BadRequestException('Nenhum ramal para criar, todos os ramais já existem');
+
+            if (data.ramaisNovos.length > 0) {
                 return await this.prismaWrite.$transaction(async (tx) => {
-                    const novosRamais = await Promise.all(data.novosRamais.map(async (ramal) => {
+                    const novosRamais = await Promise.all(data.ramaisNovos.map(async (ramal) => {
                         return await tx.ps_endpoints.create({
                             data: {
                                 id: ramal,
@@ -181,7 +187,7 @@ export class RamalService {
                                 authsRelation: {
                                     create: {
                                         username: ramal,
-                                        password: this.passwordService.generate()[0],
+                                        password: this.passwordService.generateOne(),
                                         auth_type: 'userpass'
                                     }
                                 }

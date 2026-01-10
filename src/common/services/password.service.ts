@@ -56,6 +56,10 @@ export class PasswordService {
     return arr.join('');
   }
 
+  generateOne(length: number = 12): string {
+    return this.generate(length, 1)[0];
+  }
+
   validate(password: string): boolean {
     if (password.length === 0) return false;
 
