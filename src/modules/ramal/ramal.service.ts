@@ -135,22 +135,84 @@ export class RamalService {
 
         return ramalDto
     }
-
+    
+    // RAMAIS QUE EXISTEM SERAO IGNORADOS
     async createLote(loteRamalDto: CreateLoteRamalDto): Promise<ListRamalDto[]> {
         try {
-            const { quantidadeRamais, ramalInicial } = loteRamalDto;
-            const data = {
-                // novosRamais
+            const { ramalInicial, quantidadeRamais } = loteRamalDto;
+            const data: { novosRamais: string[], ramaisExistentes: any[] } = {
+                novosRamais: [],
+                ramaisExistentes: [],
             };
 
+            for (let i=0; i<quantidadeRamais; i++) {
+                const ramal = `${Number(ramalInicial)+i}`;
+                const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
+                    where: { id: ramal }, select: { id: true }
+                });
+                if (!ramalExiste) data.novosRamais.push(ramal);
+                else data.ramaisExistentes.push(ramalExiste);
+            }
 
+            if (data.novosRamais.length === 0) throw new BadRequestException('Nenhum ramal para criar, todos os ramais já existem');
+
+            if (data.novosRamais.length > 0) {
+                return await this.prismaWrite.$transaction(async (tx) => {
+                    const novosRamais = await Promise.all(data.novosRamais.map(async (ramal) => {
+                        return await tx.ps_endpoints.create({
+                            data: {
+                                id: ramal,
+                                context: loteRamalDto.regraSaida,
+                                set_var: loteRamalDto.dod ? `dod=${loteRamalDto.dod}` : '',
+                                transport: process.env.TRANSPORT,
+                                aors: ramal,
+                                auth: ramal,
+                                disallow: 'all',
+                                allow: 'ulaw,alaw',
+                                callerid: ramal,
+                                direct_media: 'no',
+                                force_rport: 'yes',
+                                rtp_symmetric: 'yes',
+                                aorsRelation: {
+                                    create: {
+                                        max_contacts: loteRamalDto.maximoContatos
+                                    }
+                                },
+                                authsRelation: {
+                                    create: {
+                                        username: ramal,
+                                        password: this.passwordService.generate()[0],
+                                        auth_type: 'userpass'
+                                    }
+                                }
+                            },
+                            select: {
+                                id: true,
+                                context: true,
+                                set_var: true,
+                                authsRelation: {
+                                    select: {
+                                        password: true,
+                                    }
+                                },
+                                aorsRelation: {
+                                    select: {
+                                        max_contacts: true,
+                                    }
+                                }
+                            }
+                        });
+                    }));
+
+                    return novosRamais.map(ramal => this.mapRamal(ramal));
+                });
+            }
+
+            return [];
         } catch (error) {
             if (error instanceof HttpException) throw error;
-
             throw new InternalServerErrorException('Erro na criação de lote de ramais');
         }
-
-        return [];
     }
 
     async update(ramal: string, ramalDto: UpdateRamalDto): Promise<UpdateRamalDto> {
