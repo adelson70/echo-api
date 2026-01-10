@@ -5,10 +5,10 @@ import { PasswordValidator } from "src/common/decorators/password.decorator";
 export class RamalDto {
     @IsString()
     @ApiProperty({
-        description: 'Usuário do ramal',
+        description: 'Ramal',
         example: '1001',
     })
-    usuario: string;
+    ramal: string;
 
     @IsString()
     @ApiProperty({
@@ -43,7 +43,7 @@ export class RamalDto {
 
 export class CreateRamalDto extends RamalDto {
     @IsNotEmpty()
-    declare usuario: string;
+    declare ramal: string;
 
     @IsNotEmpty()
     declare senha: string;
@@ -55,8 +55,26 @@ export class CreateRamalDto extends RamalDto {
     declare maximoContatos: number;
 }
 
+export class CreateLoteRamalDto extends PartialType(
+    OmitType(RamalDto, ['ramal', 'senha'] as const)
+) {
+    @IsNumber()
+    @ApiProperty({
+        description: 'Quantidade de ramais a serem criados',
+        example: 10,
+    })
+    quantidadeRamais: number;
+
+    @IsString()
+    @ApiProperty({
+        description: 'Ramal inicial para a sequência',
+        example: '1001',
+    })
+    declare ramalInicial: string;
+}
+
 export class UpdateRamalDto extends PartialType(
-    OmitType(RamalDto, ['usuario'] as const)
+    OmitType(RamalDto, ['ramal'] as const)
 ) {
     @IsOptional()
     declare senha: string;
@@ -68,6 +86,6 @@ export class UpdateRamalDto extends PartialType(
     declare maximoContatos: number;
 }
 
-export class DeleteRamalDto extends PickType(RamalDto, ['usuario']) {}
-export class FindRamalDto extends PickType(RamalDto, ['usuario']) {}
-export class ListRamalDto extends PickType(RamalDto, ['usuario']) {}
+export class DeleteRamalDto extends PickType(RamalDto, ['ramal']) {}
+export class FindRamalDto extends PickType(RamalDto, ['ramal']) {}
+export class ListRamalDto extends PickType(RamalDto, ['ramal']) {}

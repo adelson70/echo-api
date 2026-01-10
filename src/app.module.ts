@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { PrismaModule } from './infra/database/prisma/prisma.module';
+import { CommonModule } from './common/common.module';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
@@ -18,6 +19,7 @@ import { Reflector } from '@nestjs/core';
 @Module({
   imports: [
     PrismaModule,
+    CommonModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,

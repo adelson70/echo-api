@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RamalService } from "./ramal.service";
-import { CreateRamalDto, FindRamalDto, ListRamalDto, UpdateRamalDto } from "./dto/ramal.dto";
+import { CreateLoteRamalDto, CreateRamalDto, FindRamalDto, ListRamalDto, UpdateRamalDto } from "./dto/ramal.dto";
 
 @ApiTags('Ramal')
 @Controller('ramal')
@@ -19,15 +19,15 @@ export class RamalController {
         return await this.ramalService.list();
     }
 
-    @Get(':usuario')
-    @ApiOperation({ summary: 'Buscar um ramal pelo usuário' })
+    @Get(':ramal')
+    @ApiOperation({ summary: 'Buscar um ramal' })
     @ApiResponse({
         status: 200,
         description: 'Ramal encontrado com sucesso',
         type: FindRamalDto,
     })
-    async find(@Param('usuario') usuario: string): Promise<FindRamalDto> {
-        return await this.ramalService.find(usuario);
+    async find(@Param('ramal') ramal: string): Promise<FindRamalDto> {
+        return await this.ramalService.find(ramal);
     }
 
     @Post()
@@ -41,25 +41,36 @@ export class RamalController {
         return await this.ramalService.create(ramalDto);
     }
 
-    @Delete(':usuario')
-    @ApiOperation({ summary: 'Excluir um ramal' })
+    @Post('lote')
+    @ApiOperation({ summary: 'Criar um lote de ramais' })
     @ApiResponse({
-        status: 200,
-        description: 'Ramal excluído com sucesso.',
+        status: 201,
+        description: 'Lote de ramais criado com sucesso.',
+        type: ListRamalDto,
     })
-    async delete(@Param('usuario') usuario: string): Promise<void> {
-        return await this.ramalService.delete(usuario);
+    async createLote(@Body() loteRamalDto: CreateLoteRamalDto): Promise<ListRamalDto[]> {
+        return await this.ramalService.createLote(loteRamalDto);
     }
 
-    @Put(':usuario')
-    @ApiOperation({ summary: 'Atualizar um ramal' })
+    @Delete(':ramal')
+    @ApiOperation({ summary: 'Deletar um ramal' })
     @ApiResponse({
         status: 200,
-        description: 'Ramal atualizado com sucesso.',
+        description: 'Ramal deletado com sucesso.',
+    })
+    async delete(@Param('ramal') ramal: string): Promise<void> {
+        return await this.ramalService.delete(ramal);
+    }
+
+    @Put(':ramal')
+    @ApiOperation({ summary: 'Editar um ramal' })
+    @ApiResponse({
+        status: 200,
+        description: 'Ramal editado com sucesso.',
         type: UpdateRamalDto,
     })
-    async update(@Param('usuario') usuario: string, @Body() ramalDto: UpdateRamalDto): Promise<UpdateRamalDto> {
-        return await this.ramalService.update(usuario, ramalDto);
+    async update(@Param('ramal') ramal: string, @Body() ramalDto: UpdateRamalDto): Promise<UpdateRamalDto> {
+        return await this.ramalService.update(ramal, ramalDto);
     }
 
 
