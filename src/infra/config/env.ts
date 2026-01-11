@@ -15,6 +15,9 @@ export class EnvironmentValidator {
       'JWT_SECRET_AT',
       'JWT_SECRET_RT',
       'TRANSPORT',
+      'RATE_LIMIT_POINTS',
+      'RATE_LIMIT_DURATION',
+      'RATE_LIMIT_BLOCK_DURATION',
     ];
 
     const missingVars: string[] = [];

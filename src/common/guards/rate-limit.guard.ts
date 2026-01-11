@@ -5,9 +5,9 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class RateLimitGuard implements CanActivate {
   private rateLimiter = new RateLimiterMemory({
-    points: 500, // 500 requisições
-    duration: 60, // por minuto
-    blockDuration: 300, // 5 minutos
+    points: parseInt(process.env.RATE_LIMIT_POINTS || '500'), 
+    duration: parseInt(process.env.RATE_LIMIT_DURATION || '60'), 
+    blockDuration: parseInt(process.env.RATE_LIMIT_BLOCK_DURATION || '300'), 
   });
 
   canActivate(
