@@ -1,5 +1,6 @@
 import { HttpException, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
+import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
 import { LoginDto } from "./dto/auth.dto";
 import { PasswordService } from "src/common/services/password.service";
 import { JwtService } from "@nestjs/jwt";
@@ -10,6 +11,7 @@ import type { StringValue } from "ms";
 export class AuthService {
     constructor(
         private readonly prismaRead: PrismaReadService, 
+        private readonly prismaWrite: PrismaWriteService,
         private readonly passwordService: PasswordService,
         private readonly jwtService: JwtService,
     ) 
@@ -33,6 +35,11 @@ export class AuthService {
     
             const { accessToken, refreshToken } = await this.generateTokens(usuario);
     
+            await this.prismaWrite.usuario.update({
+                where: { id: usuario.id },
+                data: { lastLogin: new Date() },
+            });
+
             return { refreshToken, accessToken, usuario };
 
         } catch (error) {

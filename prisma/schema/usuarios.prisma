@@ -32,6 +32,7 @@ model Usuario {
     senha String @db.VarChar(255)
     isAdmin Boolean @default(false)
     perfilId String? @db.Uuid
+    lastLogin DateTime?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -42,6 +43,7 @@ model Usuario {
     @@index([id], map: "usuario_id")
     @@index([email], map: "usuario_email")
     @@index([perfilId], map: "usuario_perfil_id")
+    @@index([lastLogin], map: "usuario_last_login")
 
     @@map("usuarios")
 }
