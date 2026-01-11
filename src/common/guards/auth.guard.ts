@@ -5,7 +5,7 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { LogService } from 'src/modules/log/log.service';
 import { LogActions, LogStatus, Modulos } from '@prisma/client';
 import { Logger } from '@nestjs/common';
@@ -26,6 +26,7 @@ export class AuthGuard implements CanActivate {
 		}
 
 		const request = context.switchToHttp().getRequest<Request>();
+		const response = context.switchToHttp().getResponse<Response>();
 		const { method, originalUrl } = request;
 		const ip = request.ip || request.socket.remoteAddress || 'desconhecido';
 
@@ -34,20 +35,23 @@ export class AuthGuard implements CanActivate {
 			return true;
 		}
 
-		// Extrai token do header Authorization
-		const authHeader = request.headers.authorization;
-		
-		if (!authHeader || !authHeader.startsWith('Bearer ')) {
-			// Token não existe - registra log e barra
-			await this.logUnauthenticatedAttempt(method, originalUrl, ip, 'token_ausente', request);
-			throw new UnauthorizedException('Token não fornecido');
+		const at = this.getAccessTokenFromHeader(request);
+		const rt = this.getRefreshTokenFromCookie(request);
+
+		if (!rt) {
+			await this.logUnauthenticatedAttempt(method, originalUrl, ip, 'refresh_token_ausente', request);
+			this.clearRefreshTokenFromCookie(response);
+			throw new UnauthorizedException('Refresh token não fornecido');
 		}
 
-		const token = authHeader.substring(7);
-		
+		if (!at) {
+			await this.logUnauthenticatedAttempt(method, originalUrl, ip, 'access_token_ausente', request);
+			throw new UnauthorizedException('Access token não fornecido');
+		}
+
 		try {
-			// Valida token
-			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET_AT }) as {
+			// Valida access token
+			const payload = await this.validadeToken(at, process.env.JWT_SECRET_AT!) as {
 				id: string;
 				email: string;
 				nome: string;
@@ -55,7 +59,7 @@ export class AuthGuard implements CanActivate {
 				perfilId: string;
 			};
 			
-			// Token válido - popula request.user e permite continuar
+			// Access token válido - popula request.user e permite continuar
 			(request as any).user = {
 				id: payload.id,
 				email: payload.email,
@@ -68,7 +72,7 @@ export class AuthGuard implements CanActivate {
 		} catch (error) {
 			// Token inválido/expirado - registra log e barra
 			console.log(error);
-			const reason = error.name === 'TokenExpiredError' ? 'token_expirado' : 'token_invalido';
+			const reason = error.name === 'TokenExpiredError' ? 'access_token_expirado' : 'access_token_invalido';
 			await this.logUnauthenticatedAttempt(method, originalUrl, ip, reason, request);
 			throw new UnauthorizedException('Token inválido ou expirado');
 		}
@@ -78,7 +82,7 @@ export class AuthGuard implements CanActivate {
 		method: string,
 		path: string,
 		ip: string,
-		reason: 'token_ausente' | 'token_invalido' | 'token_expirado',
+		reason: 'access_token_ausente' | 'refresh_token_ausente' | 'access_token_invalido' | 'refresh_token_invalido' | 'access_token_expirado' | 'refresh_token_expirado',
 		request: Request,
 	): Promise<void> {
 		try {
@@ -166,6 +170,27 @@ export class AuthGuard implements CanActivate {
 		}
 
 		return null;
+	}
+
+	private getRefreshTokenFromCookie(request: Request): string {
+		return request.headers.cookie?.split(';').find(c => c.trim().startsWith('rt='))?.split('=')[1] || '';
+	}
+
+	private getAccessTokenFromHeader(request: Request): string {
+		const at = request.headers.authorization;
+		return at ? at.substring(7) : '';
+	}
+
+	private async validadeToken(token: string, secret: string): Promise<any> {
+		try {
+			return await this.jwtService.verifyAsync(token, { secret });
+		} catch (error) {
+			throw new UnauthorizedException('Token inválido ou expirado');
+		}
+	}
+
+	private clearRefreshTokenFromCookie(res: Response): void {
+		res.cookie('rt', '', { httpOnly: true, secure: true, maxAge: 0 });
 	}
 
 	private isPublicRoute(context: ExecutionContext): boolean {
