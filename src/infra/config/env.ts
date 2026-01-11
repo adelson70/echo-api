@@ -19,7 +19,9 @@ export class EnvironmentValidator {
       'RATE_LIMIT_DURATION',
       'RATE_LIMIT_BLOCK_DURATION',
       'USUARIO_ADMIN_SEED',
-      'BCRYPT_SALT'
+      'BCRYPT_SALT',
+      'JWT_EXPIRE_AT',
+      'JWT_EXPIRE_RT',
     ];
 
     const missingVars: string[] = [];

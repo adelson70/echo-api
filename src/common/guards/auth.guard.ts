@@ -9,6 +9,7 @@ import { Request } from 'express';
 import { LogService } from 'src/modules/log/log.service';
 import { LogActions, LogStatus, Modulos } from '@prisma/client';
 import { Logger } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,9 +17,14 @@ export class AuthGuard implements CanActivate {
 	constructor(
 		private jwtService: JwtService,
 		private logService: LogService,
+		private reflector: Reflector,
 	) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
+		if (this.isPublicRoute(context)) {
+			return true;
+		}
+
 		const request = context.switchToHttp().getRequest<Request>();
 		const { method, originalUrl } = request;
 		const ip = request.ip || request.socket.remoteAddress || 'desconhecido';
@@ -38,21 +44,30 @@ export class AuthGuard implements CanActivate {
 		}
 
 		const token = authHeader.substring(7);
-
+		
 		try {
 			// Valida token
-			const payload = await this.jwtService.verifyAsync(token);
+			const payload = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET_AT }) as {
+				id: string;
+				email: string;
+				nome: string;
+				isAdmin: boolean;
+				perfilId: string;
+			};
 			
 			// Token válido - popula request.user e permite continuar
 			(request as any).user = {
-				id: payload.sub || payload.id,
+				id: payload.id,
 				email: payload.email,
 				nome: payload.nome,
+				isAdmin: payload.isAdmin,
+				perfilId: payload.perfilId,
 			};
 			
 			return true;
 		} catch (error) {
 			// Token inválido/expirado - registra log e barra
+			console.log(error);
 			const reason = error.name === 'TokenExpiredError' ? 'token_expirado' : 'token_invalido';
 			await this.logUnauthenticatedAttempt(method, originalUrl, ip, reason, request);
 			throw new UnauthorizedException('Token inválido ou expirado');
@@ -103,7 +118,7 @@ export class AuthGuard implements CanActivate {
 	}
 
 	private shouldIgnoreRoute(path: string): boolean {
-		const ignoredRoutes = ['/docs', '/docs-json', '/health', '/log'];
+		const ignoredRoutes = ['/docs', '/docs-json', '/health'];
 		return ignoredRoutes.some((route) => path.startsWith(route));
 	}
 
@@ -152,5 +167,12 @@ export class AuthGuard implements CanActivate {
 
 		return null;
 	}
-}
 
+	private isPublicRoute(context: ExecutionContext): boolean {
+		const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
+			context.getHandler(),
+			context.getClass(),
+		]);
+		return isPublic;
+	}
+}

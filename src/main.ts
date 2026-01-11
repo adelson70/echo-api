@@ -29,7 +29,7 @@ async function bootstrap() {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    // credentials: true,
+    credentials: true,
   });
 
   // Configurar arquivos estáticos para o Swagger
@@ -74,6 +74,18 @@ async function bootstrap() {
       .setTitle('Echo API')
       .setDescription('Documentação da API Echo')
       .setVersion('1.0')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'JWT',
+          description: 'Enter JWT token',
+          in: 'header',
+        },
+        'JWT-auth',
+      )
+      .addSecurityRequirements('JWT-auth')
       .build();
   
     const document = SwaggerModule.createDocument(app, config);

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class PasswordService {
@@ -41,6 +42,14 @@ export class PasswordService {
     }
 
     return passwords;
+  }
+
+  generateHash(password: string): string {
+    return bcrypt.hash(password, process.env.BCRYPT_SALT_ROUNDS);
+  }
+
+  validateHash(password: string, hash: string): boolean {
+    return bcrypt.compare(password, hash);
   }
 
   private getRandomChar(chars: string): string {
