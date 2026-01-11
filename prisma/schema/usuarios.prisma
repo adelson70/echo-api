@@ -28,13 +28,14 @@ enum LogStatus {
 model Usuario {
     id String @id @default(uuid()) @db.Uuid
     nome String @db.VarChar(255)
-    email String @db.VarChar(255)
+    email String @db.VarChar(255) @unique
     senha String @db.VarChar(255)
-    perfilId String @db.Uuid
+    isAdmin Boolean @default(false)
+    perfilId String? @db.Uuid
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    perfil Perfil @relation(fields: [perfilId], references: [id])
+    perfil Perfil? @relation(fields: [perfilId], references: [id])
     permissoesUsuario PermissaoUsuario[]
     logs Log[]
 

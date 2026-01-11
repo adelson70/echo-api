@@ -18,6 +18,8 @@ export class EnvironmentValidator {
       'RATE_LIMIT_POINTS',
       'RATE_LIMIT_DURATION',
       'RATE_LIMIT_BLOCK_DURATION',
+      'USUARIO_ADMIN_SEED',
+      'BCRYPT_SALT'
     ];
 
     const missingVars: string[] = [];
