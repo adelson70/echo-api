@@ -5,7 +5,8 @@ import { CommonModule } from './common/common.module';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
-import { AuthGuard } from './common/guards/unified-auth.guard';
+import { AuditLogInterceptor } from './common/interceptors/audit-log.interceptor';
+import { AuthGuard } from './common/guards/auth.guard';
 import { RamalModule } from './modules/ramal/ramal.module';
 import { RegraModule } from './modules/regra/regra.module';
 import { TroncoModule } from './modules/tronco/tronco.module';
@@ -14,6 +15,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
 import { GrupoDeCapturaModule } from './modules/grupo-de-captura/grupo-de-captura.module';
 import { RelatorioModule } from './modules/relatorio/relatorio.module';
 import { SistemaModule } from './modules/sistema/sistema.module';
+import { LogModule } from './modules/log/log.module';
 import { Reflector } from '@nestjs/core';
 
 @Module({
@@ -32,12 +34,18 @@ import { Reflector } from '@nestjs/core';
     GrupoDeCapturaModule,
     RelatorioModule,
     SistemaModule,
+    LogModule,
+  
   ],
   controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditLogInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,

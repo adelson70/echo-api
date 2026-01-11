@@ -2,6 +2,7 @@ enum Modulos {
     RAMAL
     REGRA_DE_SAIDA
     REGRA_DE_ENTRADA
+    REGRA_GERAL
     TRONCO
     FILA
     GRUPO_DE_CAPTURA
@@ -13,9 +14,9 @@ enum Modulos {
 enum LogActions {
     LOGIN
     LOGOUT
-    CRIOU
-    EDITOU
-    DELETADO
+    CRIAR
+    EDITAR
+    DELETAR
 }
 
 enum LogStatus {
@@ -110,7 +111,7 @@ model PermissaoUsuario {
 
 model Log {
     id String @id @default(uuid()) @db.Uuid
-    usuarioId String @db.Uuid
+    usuarioId String? @db.Uuid
     ip String @db.VarChar(255)
     status LogStatus
     acao LogActions
@@ -119,7 +120,7 @@ model Log {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    usuario Usuario @relation(fields: [usuarioId], references: [id])
+    usuario Usuario? @relation(fields: [usuarioId], references: [id])
 
     @@index([id], map: "logs_id")
     @@index([usuarioId], map: "logs_usuario_id")
