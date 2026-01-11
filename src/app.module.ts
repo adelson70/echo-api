@@ -16,6 +16,7 @@ import { GrupoDeCapturaModule } from './modules/grupo-de-captura/grupo-de-captur
 import { RelatorioModule } from './modules/relatorio/relatorio.module';
 import { SistemaModule } from './modules/sistema/sistema.module';
 import { LogModule } from './modules/log/log.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { Reflector } from '@nestjs/core';
 
 @Module({
@@ -24,7 +25,6 @@ import { Reflector } from '@nestjs/core';
     CommonModule,
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET,
     }),
     RegraModule,
     RamalModule,
@@ -35,6 +35,8 @@ import { Reflector } from '@nestjs/core';
     RelatorioModule,
     SistemaModule,
     LogModule,
+    AuthModule,
+  
   
   ],
   controllers: [AppController],
