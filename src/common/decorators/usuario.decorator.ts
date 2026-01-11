@@ -11,7 +11,7 @@ export interface UsuarioPayload {
 export const Usuario = createParamDecorator(
     (data: keyof UsuarioPayload | undefined, ctx: ExecutionContext): UsuarioPayload[keyof UsuarioPayload] | UsuarioPayload => {
     const request = ctx.switchToHttp().getRequest();
-    const usuario = request.user as UsuarioPayload;
+    const usuario = request.usuario as UsuarioPayload;
     return data ? usuario?.[data] : usuario;
 },
 )

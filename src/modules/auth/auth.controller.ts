@@ -28,12 +28,12 @@ export class AuthController {
             sameSite: 'strict',
         });
 
-        return res.status(200).json({ accessToken, usuario });
+        return res.status(200).json({ accessToken, usuario, message: 'Login realizado com sucesso' });
     }
 
     @Post('logout')
     async logout(
-        @Res() res: Response
+        @Res() res: Response,
     ){
         res.cookie('rt', '', { httpOnly: true, secure: true, maxAge: 0 });
         return res.status(200).json({ message: 'Logout realizado com sucesso' });
