@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/auth.dto";
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import ms, { StringValue } from "ms";
 import { Public } from "src/common/decorators/public-route.decorator";
 
@@ -37,5 +37,35 @@ export class AuthController {
     ){
         res.cookie('rt', '', { httpOnly: true, secure: true, maxAge: 0 });
         return res.status(200).json({ message: 'Logout realizado com sucesso' });
+    }
+
+    @Public()
+    @Post('refresh-token')
+    async refreshToken(
+        @Req() req: Request,
+        @Res() res: Response
+    ){
+        try {
+            const refreshTokenOld = req.cookies?.rt || req.headers.cookie?.split(';').find(c => c.trim().startsWith('rt='))?.split('=')[1] || '';
+
+            if (!refreshTokenOld) throw new UnauthorizedException('Refresh token não fornecido');
+
+            const { refreshToken, accessToken } = await this.authService.refreshToken(refreshTokenOld);
+
+            res.cookie('rt', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: ms(process.env.JWT_EXPIRE_RT! as StringValue),
+                sameSite: 'strict',
+            });
+
+            return res.status(200).json({ accessToken, message: 'Tokens renovados com sucesso' });
+            
+        } catch (error) {
+            if (error.status === 401) {
+                res.cookie('rt', '', { httpOnly: true, secure: true, maxAge: 0 });
+            }
+            throw error;
+        }
     }
 }

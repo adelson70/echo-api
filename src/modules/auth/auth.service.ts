@@ -6,6 +6,7 @@ import { PasswordService } from "src/common/services/password.service";
 import { JwtService } from "@nestjs/jwt";
 import { Usuario } from "@prisma/client";
 import type { StringValue } from "ms";
+import { UsuarioPayload } from "src/common/decorators/usuario.decorator";
 
 @Injectable()
 export class AuthService {
@@ -49,14 +50,30 @@ export class AuthService {
         }
     }
 
-    private async generateTokens(usuario: Usuario){
+    async refreshToken(refreshTokenOld: string){
+        try {
+            const payload = await this.jwtService.verifyAsync(refreshTokenOld, {
+                secret: process.env.JWT_SECRET_RT,
+            }) as UsuarioPayload;
+
+            const { accessToken, refreshToken } = await this.generateTokens(payload);
+
+            return { accessToken, refreshToken };
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro ao atualizar token');
+        }
+    }
+
+    private async generateTokens(usuario: UsuarioPayload){
         const payload = {
-            userId: usuario.id,
+            id: usuario.id,
             nome: usuario.nome,
             email: usuario.email,
             isAdmin: usuario.isAdmin,
             perfilId: usuario.perfilId
-        } as any;
+        } as UsuarioPayload;
 
         const accessToken = await this.jwtService.signAsync(payload, {
             secret: process.env.JWT_SECRET_AT,

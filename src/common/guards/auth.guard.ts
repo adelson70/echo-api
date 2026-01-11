@@ -59,7 +59,7 @@ export class AuthGuard implements CanActivate {
 			};
 			
 			// Access token válido - popula request.user e permite continuar
-			(request as any).user = {
+			(request as any).usuario = {
 				id: payload.id,
 				email: payload.email,
 				nome: payload.nome,
