@@ -35,8 +35,7 @@ export class AuthGuard implements CanActivate {
 			return true;
 		}
 
-		const at = this.getAccessTokenFromHeader(request);
-		const rt = this.getRefreshTokenFromCookie(request);
+		const { at, rt } = this.getTokens(request);
 
 		if (!rt) {
 			await this.logUnauthenticatedAttempt(method, originalUrl, ip, 'refresh_token_ausente', request);
@@ -179,6 +178,13 @@ export class AuthGuard implements CanActivate {
 	private getAccessTokenFromHeader(request: Request): string {
 		const at = request.headers.authorization;
 		return at ? at.substring(7) : '';
+	}
+
+	private getTokens(request: Request): { at: string, rt: string } {
+		return {
+			at: this.getAccessTokenFromHeader(request),
+			rt: this.getRefreshTokenFromCookie(request),
+		};
 	}
 
 	private async validadeToken(token: string, secret: string): Promise<any> {
