@@ -1,5 +1,5 @@
 import { IsString, IsNotEmpty, IsEnum, IsOptional, IsNumber } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, PickType } from "@nestjs/swagger";
 import { NomeIdentificadorFilaValidator } from "src/common/decorators/fila.decorator";
 
 export enum EstrategiaFila {
@@ -70,9 +70,6 @@ export class FilaDto {
     musicaDeEspera: MusicaDeEsperaFila;
 }
 
-export class CreateFilaDto extends FilaDto {}
-export class UpdateFilaDto extends FilaDto {}
-
 export class ListFilaDto extends FilaDto {
     @IsString()
     @IsNotEmpty()
@@ -82,3 +79,8 @@ export class ListFilaDto extends FilaDto {
     })
     ramais: string[];
 }
+
+export class CreateFilaDto extends FilaDto {}
+export class UpdateFilaDto extends FilaDto {}
+export class FindFilaDto extends PickType(FilaDto, ['nomeIdentificador']) {}
+export class DeleteFilaDto extends PickType(FilaDto, ['nomeIdentificador']) {}

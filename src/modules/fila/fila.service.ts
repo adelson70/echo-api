@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
 import { CreateFilaDto, FilaDto, ListFilaDto } from "./dto/fila.dto";
 import { Prisma, queue_members, queues } from "@prisma/client";
+import { FindFilaDto } from "./dto/fila.dto";
 
 @Injectable()
 export class FilaService {
@@ -36,6 +37,39 @@ export class FilaService {
         }
     }
 
+    async find(fila: string): Promise<FindFilaDto> {
+
+        try {
+            const filaEncontrada = await this.prismaRead.queues.findFirst({
+                where: {
+                    name: fila,
+                },
+                select: {
+                    name: true,
+                    displayname: true,
+                    strategy: true,
+                    timeout: true,
+                    retry: true,
+                    musiconhold: true,
+                    queue_members: {
+                        select: {
+                            ramal_id: true,
+                        }
+                    }
+                },
+            }) as unknown as Prisma.queuesGetPayload<{ include: { queue_members: true } }>;
+
+            if (!filaEncontrada) throw new NotFoundException(`Fila ${fila} não encontrada`);
+
+            return this.mapFila(filaEncontrada);
+
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro ao buscar fila');
+        }
+    }  
+     
     async create(createFilaDto: CreateFilaDto): Promise<CreateFilaDto> {
         try {
             const filaExiste = await this.prismaRead.queues.findFirst({
@@ -62,8 +96,13 @@ export class FilaService {
                     timeout: true,
                     retry: true,
                     musiconhold: true,
+                    queue_members: {
+                        select: {
+                            ramal_id: true,
+                        }
+                    }
                 }
-            }) as queues;
+            }) as unknown as Prisma.queuesGetPayload<{ include: { queue_members: true } }>;
 
             return this.mapFila(fila);
 
@@ -72,7 +111,7 @@ export class FilaService {
         }
     }
 
-    private mapFila(fila: queues): FilaDto {
+    private mapFila(fila: Prisma.queuesGetPayload<{ include: { queue_members: true } }>): FilaDto {
         return {
             nomeIdentificador: fila.name,
             nome: fila.displayname,
@@ -80,6 +119,7 @@ export class FilaService {
             tempoEspera: fila.timeout,
             tentativas: fila.retry,
             musicaDeEspera: fila.musiconhold,
+            ramais: fila.queue_members?.map((member: queue_members) => member.ramal_id) || [],
         } as FilaDto;
     }
 
