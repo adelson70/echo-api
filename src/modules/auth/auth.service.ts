@@ -29,7 +29,7 @@ export class AuthService {
     
             if (!usuario) throw new UnauthorizedException('Credenciais inválidas');
     
-            const isPasswordValid = this.passwordService.validateHash(password, usuario.senha);
+            const isPasswordValid = await this.passwordService.validateHash(password, usuario.senha);
     
             if (!isPasswordValid) throw new UnauthorizedException('Credenciais inválidas');
     

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UsuarioService } from "./usuario.service";
-import { FindUsuarioDto, ListUsuarioDto } from "./dto/usuario.dto";
+import { CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto } from "./dto/usuario.dto";
 import { Usuario, type UsuarioPayload } from "src/common/decorators/usuario.decorator";
 
 @ApiTags('Usuario')
@@ -34,5 +34,19 @@ export class UsuarioController {
         @Usuario() usuario: UsuarioPayload,
     ): Promise<FindUsuarioDto> {
         return await this.usuarioService.find(id, usuario);
+    }
+
+    @Post('create')
+    @ApiOperation({ summary: 'Criar um novo usuário' })
+    @ApiResponse({
+        status: 201,
+        description: 'Usuário criado com sucesso',
+        type: CreateUsuarioDto,
+    })
+    async create(
+        @Body() createUsuarioDto: CreateUsuarioDto,
+        @Usuario() usuario: UsuarioPayload,
+    ): Promise<CreateUsuarioDto> {
+        return await this.usuarioService.create(createUsuarioDto, usuario);
     }
 }

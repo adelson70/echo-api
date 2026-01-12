@@ -1,7 +1,7 @@
-import { HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
-import { FindUsuarioDto, ListUsuarioDto } from "./dto/usuario.dto";
+import { CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto } from "./dto/usuario.dto";
 import { UsuarioPayload } from "src/common/decorators/usuario.decorator";
 import { Prisma } from "@prisma/client";
 
@@ -108,6 +108,31 @@ export class UsuarioService {
             if (error instanceof HttpException) throw error;
 
             throw new InternalServerErrorException('Erro ao buscar usuário pelo id');
+        }
+    }
+
+    async create(createUsuarioDto: CreateUsuarioDto, usuario: UsuarioPayload): Promise<CreateUsuarioDto> {
+        try {
+            const usuarioEncontrado = await this.prismaRead.usuario.findUnique({ where: { email: createUsuarioDto.email } });
+
+            if (usuarioEncontrado) throw new BadRequestException('Usuário já existe');
+
+            if (!usuario.is_admin && createUsuarioDto.is_admin) throw new ForbiddenException('Você não tem permissão para criar um usuário administrador');
+
+            if (createUsuarioDto.perfil_id) {
+                const perfil = await this.prismaRead.perfil.findUnique({ where: { id: createUsuarioDto.perfil_id } });
+             
+                if (!perfil) throw new BadRequestException('Perfil não encontrado');
+            }
+
+            const usuarioCriado = await this.prismaWrite.usuario.create({ data: createUsuarioDto });
+
+            return usuarioCriado as CreateUsuarioDto;
+            
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro ao criar usuário');
         }
     }
 }

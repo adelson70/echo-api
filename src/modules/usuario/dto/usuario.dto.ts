@@ -46,7 +46,7 @@ export class UsuarioDto {
     is_admin: boolean;
     
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     @ApiProperty({
         description: 'ID do perfil do usuário',
         example: '123e4567-e89b-12d3-a456-426614174000',
@@ -83,3 +83,4 @@ export class ListUsuarioDto extends OmitType(
     perfil: PerfilDto | null = null;
 }
 export class FindUsuarioDto extends ListUsuarioDto {}
+export class CreateUsuarioDto extends OmitType(UsuarioDto, ['id', 'last_login'] as const) {}
