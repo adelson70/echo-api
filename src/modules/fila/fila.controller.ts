@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { FilaService } from "./fila.service";
 import { CreateFilaDto, FindFilaDto, ListFilaDto } from "./dto/fila.dto";
@@ -6,7 +6,7 @@ import { CreateFilaDto, FindFilaDto, ListFilaDto } from "./dto/fila.dto";
 @ApiTags('Fila')
 @Controller('fila')
 export class FilaController {
-    constructor(private readonly filaService: FilaService) {}
+    constructor(private readonly filaService: FilaService) { }
 
     @Get()
     @ApiOperation({ summary: 'Listar todas as filas' })
@@ -43,5 +43,15 @@ export class FilaController {
         @Body() createFilaDto: CreateFilaDto
     ): Promise<CreateFilaDto> {
         return await this.filaService.create(createFilaDto);
+    }
+
+    @Delete(':fila')
+    @ApiOperation({ summary: 'Deletar uma fila' })
+    @ApiResponse({
+        status: 200,
+        description: 'Fila deletada com sucesso.',
+    })
+    async delete(@Param('fila') fila: string): Promise<void> {
+        return await this.filaService.delete(fila);
     }
 }

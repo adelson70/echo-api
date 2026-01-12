@@ -69,7 +69,7 @@ export class FilaService {
             throw new InternalServerErrorException('Erro ao buscar fila');
         }
     }  
-     
+
     async create(createFilaDto: CreateFilaDto): Promise<CreateFilaDto> {
         try {
             const filaExiste = await this.prismaRead.queues.findFirst({
@@ -108,6 +108,23 @@ export class FilaService {
 
         } catch (error) {
             throw new InternalServerErrorException('Erro ao criar fila');
+        }
+    }
+
+    async delete(fila: string): Promise<void> {
+        try {
+            await this.prismaWrite.queues.delete({
+                where: {
+                    name: fila,
+                }
+            });
+
+            return;
+        }
+        catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro ao deletar fila');
         }
     }
 
