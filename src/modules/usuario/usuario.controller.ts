@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UsuarioService } from "./usuario.service";
-import { ListUsuarioDto } from "./dto/usuario.dto";
+import { FindUsuarioDto, ListUsuarioDto } from "./dto/usuario.dto";
 import { Usuario, type UsuarioPayload } from "src/common/decorators/usuario.decorator";
 
 @ApiTags('Usuario')
@@ -20,5 +20,19 @@ export class UsuarioController {
         @Usuario() usuario: UsuarioPayload,
     ): Promise<ListUsuarioDto[]> {
         return await this.usuarioService.list(usuario);
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Buscar um usuário' })
+    @ApiResponse({
+        status: 200,
+        description: 'Usuário encontrado com sucesso',
+        type: FindUsuarioDto,
+    })
+    async find(
+        @Param('id') id: string,
+        @Usuario() usuario: UsuarioPayload,
+    ): Promise<FindUsuarioDto> {
+        return await this.usuarioService.find(id, usuario);
     }
 }

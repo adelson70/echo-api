@@ -62,3 +62,4 @@ export class UsuarioDto {
 }
 
 export class ListUsuarioDto extends OmitType(UsuarioDto, ['senha'] as const) {}
+export class FindUsuarioDto extends OmitType(UsuarioDto, ['senha'] as const) {}
