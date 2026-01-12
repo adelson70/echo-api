@@ -1,6 +1,7 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsBoolean } from "class-validator";
+import { IsString, IsNotEmpty, IsEmail, IsOptional, IsBoolean, IsArray, IsObject } from "class-validator";
 import { ApiProperty, OmitType, PartialType, PickType } from "@nestjs/swagger";
 import { PasswordValidator } from "src/common/decorators/password.decorator";
+import { PerfilDto, PermissaoDto } from "src/modules/sistema/dto/sistema.dto";
 
 export class UsuarioDto {
     @IsString()
@@ -61,5 +62,24 @@ export class UsuarioDto {
     last_login: Date;
 }
 
-export class ListUsuarioDto extends OmitType(UsuarioDto, ['senha'] as const) {}
-export class FindUsuarioDto extends OmitType(UsuarioDto, ['senha'] as const) {}
+export class ListUsuarioDto extends OmitType(
+    UsuarioDto, ['senha'] as const
+) {
+    @IsArray()
+    @IsNotEmpty()
+    @ApiProperty({
+        description: 'Permissões do usuário',
+        example: [{ modulo: 'usuario', criar: true, ler: true, editar: true, deletar: true }],
+    })
+    permissoesUsuario: PermissaoDto[];
+
+    @IsObject()
+    @IsOptional()
+    @ApiProperty({
+        description: 'Perfil do usuário',
+        example: { nome: 'Administrador', permissoes: [{ modulo: 'usuario', criar: true, ler: true, editar: true, deletar: true }] },
+        required: false,
+    })
+    perfil: PerfilDto | null = null;
+}
+export class FindUsuarioDto extends ListUsuarioDto {}

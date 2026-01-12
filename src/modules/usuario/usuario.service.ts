@@ -28,6 +28,29 @@ export class UsuarioService {
                     is_admin: true,
                     perfil_id: true,
                     last_login: true,
+                    perfil: {
+                        select: {
+                            nome: true,
+                            permissoes: {
+                                select: {
+                                    modulo: true,
+                                    criar: true,
+                                    ler: true,
+                                    editar: true,
+                                    deletar: true,
+                                }
+                            }
+                        }
+                    },
+                    permissoesUsuario: {
+                        select: {
+                            modulo: true,
+                            criar: true,
+                            ler: true,
+                            editar: true,
+                            deletar: true,
+                        }
+                    }
                 } 
             }) as ListUsuarioDto[];
             
@@ -45,7 +68,37 @@ export class UsuarioService {
 
             if (!usuario.is_admin) where.is_admin = false;
 
-            const usuarioEncontrado = await this.prismaRead.usuario.findUnique({ where });
+            const usuarioEncontrado = await this.prismaRead.usuario.findUnique({ where, select: {
+                id: true,
+                nome: true,
+                email: true,
+                is_admin: true,
+                perfil_id: true,
+                last_login: true,
+                perfil: {
+                    select: {
+                        nome: true,
+                        permissoes: {
+                            select: {
+                                modulo: true,
+                                criar: true,
+                                ler: true,
+                                editar: true,
+                                deletar: true,
+                            }
+                        }
+                    }
+                },
+                permissoesUsuario: {
+                    select: {
+                        modulo: true,
+                        criar: true,
+                        ler: true,
+                        editar: true,
+                        deletar: true,
+                    }
+                }
+            } });
 
             if (!usuarioEncontrado) throw new NotFoundException('Usuário não encontrado');
 
