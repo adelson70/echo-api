@@ -4,6 +4,7 @@ import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.servi
 import { CreateFilaDto, FilaDto, ListFilaDto, UpdateFilaDto } from "./dto/fila.dto";
 import { Prisma, queue_members, queues } from "@prisma/client";
 import { FindFilaDto } from "./dto/fila.dto";
+import { ToggleMemberDto } from "../ramal/dto/ramal.dto";
 
 @Injectable()
 export class FilaService {
@@ -162,6 +163,66 @@ export class FilaService {
             if (error instanceof HttpException) throw error;
 
             throw new InternalServerErrorException('Erro ao atualizar fila');
+        }
+    }
+
+    async toggleMember(filaId: string, toggleMemberDto: ToggleMemberDto): Promise<boolean> {
+        try {
+            const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
+                where: {
+                    id: toggleMemberDto.ramal,
+                },
+            });
+
+            if (!ramalExiste) throw new NotFoundException('Ramal não encontrado');
+
+            const filaExiste = await this.prismaRead.queues.findFirst({
+                where: {
+                    id: filaId,
+                },
+            });
+
+            if (!filaExiste) throw new NotFoundException('Fila não encontrada');
+
+            const memberExiste = await this.prismaRead.queue_members.findFirst({
+                where: {
+                    queue_id: filaId,
+                    ramal_id: toggleMemberDto.ramal,
+                },
+            });
+
+            // Se o membro existe, remove ele da fila
+            if (memberExiste) {
+                await this.prismaWrite.queue_members.delete({
+                    where: {
+                        uniqueid: memberExiste.uniqueid,
+                    },
+                });
+                return false;
+            }
+
+            // Se o membro não existe, adiciona ele à fila
+            else {
+                const data = {
+                    queue_name: filaExiste.name,
+                    queue_id: filaId,
+                    ramal_id: toggleMemberDto.ramal,
+                    interface: `PJSIP/${toggleMemberDto.ramal}`,
+                    membername: toggleMemberDto.ramal,
+                    penalty: 0,
+                    paused: 0,
+                }
+
+                await this.prismaWrite.queue_members.create({
+                    data,
+                });
+                return true;
+            }
+        }
+        catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro ao adicionar/remover membro à fila');
         }
     }
 

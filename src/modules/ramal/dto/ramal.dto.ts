@@ -12,6 +12,13 @@ export class RamalDto {
 
     @IsString()
     @ApiProperty({
+        description: 'Nome do ramal',
+        example: 'Ramal 1001 - João da Silva',
+    })
+    nome: string;
+
+    @IsString()
+    @ApiProperty({
         description: 'Senha do ramal',
         example: 'd8J92#kH4!l',
     })
@@ -56,7 +63,7 @@ export class CreateRamalDto extends RamalDto {
 }
 
 export class CreateLoteRamalDto extends PartialType(
-    OmitType(RamalDto, ['ramal', 'senha'] as const)
+    OmitType(RamalDto, ['ramal', 'senha', 'nome'] as const)
 ) {
     @IsNumber()
     @ApiProperty({
@@ -77,6 +84,9 @@ export class UpdateRamalDto extends PartialType(
     OmitType(RamalDto, ['ramal'] as const)
 ) {
     @IsOptional()
+    declare nome: string;
+
+    @IsOptional()
     declare senha: string;
 
     @IsOptional()
@@ -89,3 +99,4 @@ export class UpdateRamalDto extends PartialType(
 export class DeleteRamalDto extends PickType(RamalDto, ['ramal']) {}
 export class FindRamalDto extends PickType(RamalDto, ['ramal']) {}
 export class ListRamalDto extends PickType(RamalDto, ['ramal']) {}
+export class ToggleMemberDto extends PickType(RamalDto, ['ramal']) {}

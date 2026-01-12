@@ -1,18 +1,19 @@
 model queue_members {
+  queue_id        String           @default(uuid())
   queue_name      String           @db.VarChar(80)
   interface       String           @db.VarChar(80) @unique
   membername      String?          @db.VarChar(80)
   state_interface String?          @db.VarChar(80)
   penalty         Int?
   paused          Int?
-  uniqueid        Int              @unique
+  uniqueid        Int              @unique @default(autoincrement())
   ramal_id        String           @db.VarChar(255)
   wrapuptime      Int?
   ringinuse       ast_bool_values?
   reason_paused   String?          @db.VarChar(80)
 
   queueMembers ps_endpoints @relation(fields: [ramal_id], references: [id], onDelete: Cascade)
-  queue queues @relation(fields: [queue_name], references: [id], onDelete: Cascade)
+  queue queues @relation(fields: [queue_id], references: [id], onDelete: Cascade)
 
   @@id([queue_name, interface])
 }
@@ -28,8 +29,8 @@ model queue_rules {
 }
 
 model queues {
-  id                          String                  @unique @default(uuid())
-  name                        String                  @id @db.VarChar(128) @unique
+  id                          String                  @unique @default(uuid()) // id do sistema
+  name                        String                  @id @db.VarChar(128) @unique // id do asterisk
   displayname                 String                  @db.VarChar(128)
   musiconhold                 String?                 @db.VarChar(128)
   announce                    String?                 @db.VarChar(128)

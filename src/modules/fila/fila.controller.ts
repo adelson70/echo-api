@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common"
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { FilaService } from "./fila.service";
 import { CreateFilaDto, FindFilaDto, ListFilaDto, UpdateFilaDto } from "./dto/fila.dto";
+import { ToggleMemberDto } from "../ramal/dto/ramal.dto";
 
 @ApiTags('Fila')
 @Controller('fila')
@@ -67,5 +68,21 @@ export class FilaController {
         @Body() updateFilaDto: UpdateFilaDto
     ): Promise<UpdateFilaDto> {
         return await this.filaService.update(filaId, updateFilaDto);
+    }
+
+    @Put(':id/member')
+    @ApiOperation({ summary: 'Adicionar/remover um membro à fila' })
+    @ApiResponse({
+        status: 200,
+        description: 'Membro adicionado/removido com sucesso.',
+    })
+    async addMember(
+        @Param('id') filaId: string,
+        @Body() toggleMemberDto: ToggleMemberDto
+    ): Promise<{ message: string }> {
+       
+        const result = await this.filaService.toggleMember(filaId, toggleMemberDto);
+       
+        return { message: result ? `Membro ${toggleMemberDto.ramal} adicionado à fila` : `Membro ${toggleMemberDto.ramal} removido da fila` };
     }
 }

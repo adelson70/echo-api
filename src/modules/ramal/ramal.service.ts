@@ -18,6 +18,7 @@ export class RamalService {
             const ramais = await this.prismaRead.ps_endpoints.findMany({
                 select: {
                     id: true,
+                    displayname: true,
                     context: true,
                     set_var: true,
                     authsRelation: {
@@ -55,6 +56,7 @@ export class RamalService {
                 },
                 select: {
                     id: true,
+                    displayname: true,
                     context: true,
                     set_var: true,
                     authsRelation: {
@@ -98,6 +100,7 @@ export class RamalService {
                 await tx.ps_endpoints.create({
                     data: {
                         id: ramalDto.ramal,
+                        displayname: ramalDto.nome || ramalDto.ramal,
                         context: ramalDto.regraSaida,
                         set_var: `dod=${ramalDto.dod}`,
                         transport: process.env.TRANSPORT,
@@ -168,6 +171,7 @@ export class RamalService {
                         return await tx.ps_endpoints.create({
                             data: {
                                 id: ramal,
+                                displayname: ramal,
                                 context: loteRamalDto.regraSaida,
                                 set_var: loteRamalDto.dod ? `dod=${loteRamalDto.dod}` : '',
                                 transport: process.env.TRANSPORT,
@@ -229,6 +233,7 @@ export class RamalService {
                 where: { id: ramal },
                 select: {
                     id: true,
+                    displayname: true,
                     context: true,
                     set_var: true,
                     authsRelation: {
@@ -349,6 +354,7 @@ export class RamalService {
     private mapRamal(ramal: any): RamalDto {
         return {
             ramal: ramal.id,
+            nome: ramal.displayname,
             senha: ramal!.authsRelation!.password,
             regraSaida: ramal!.context!,
             maximoContatos: ramal!.aorsRelation!.max_contacts,

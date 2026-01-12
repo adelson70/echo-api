@@ -1,5 +1,6 @@
 model ps_endpoints {
   id                                 String                                      @unique @db.VarChar(255)
+  displayname                        String?                                     @db.VarChar(255)
   transport                          String?                                     @db.VarChar(40)
   aors                               String?                                     @db.VarChar(2048)
   auth                               String?                                     @db.VarChar(255)
