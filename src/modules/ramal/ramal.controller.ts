@@ -30,7 +30,7 @@ export class RamalController {
         return await this.ramalService.find(ramal);
     }
 
-    @Post()
+    @Post('create')
     @ApiOperation({ summary: 'Criar um novo ramal' })
     @ApiResponse({
         status: 201,
@@ -41,7 +41,7 @@ export class RamalController {
         return await this.ramalService.create(ramalDto);
     }
 
-    @Post('lote')
+    @Post('create-lote')
     @ApiOperation({ summary: 'Criar um lote de ramais' })
     @ApiResponse({
         status: 201,

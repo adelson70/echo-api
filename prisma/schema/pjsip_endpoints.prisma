@@ -146,6 +146,7 @@ model ps_endpoints {
 
   authsRelation ps_auths?
   aorsRelation  ps_aors?
+  queueMembers queue_members[]
 
   @@index([id], map: "ps_endpoints_id")
 }

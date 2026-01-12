@@ -1,14 +1,18 @@
 model queue_members {
   queue_name      String           @db.VarChar(80)
-  interface       String           @db.VarChar(80)
+  interface       String           @db.VarChar(80) @unique
   membername      String?          @db.VarChar(80)
   state_interface String?          @db.VarChar(80)
   penalty         Int?
   paused          Int?
   uniqueid        Int              @unique
+  ramal_id        String           @db.VarChar(255)
   wrapuptime      Int?
   ringinuse       ast_bool_values?
   reason_paused   String?          @db.VarChar(80)
+
+  queueMembers ps_endpoints @relation(fields: [ramal_id], references: [id], onDelete: Cascade)
+  queue queues @relation(fields: [queue_name], references: [name], onDelete: Cascade)
 
   @@id([queue_name, interface])
 }
@@ -24,7 +28,8 @@ model queue_rules {
 }
 
 model queues {
-  name                        String                  @id @db.VarChar(128)
+  name                        String                  @id @db.VarChar(128) @unique
+  displayname                 String                  @db.VarChar(128)
   musiconhold                 String?                 @db.VarChar(128)
   announce                    String?                 @db.VarChar(128)
   context                     String?                 @db.VarChar(128)
@@ -80,6 +85,14 @@ model queues {
   defaultrule                 String?                 @db.VarChar(128)
   timeoutpriority             String?                 @db.VarChar(128)
   log_restricted_caller_id    ast_bool_values?
+
+  queue_members queue_members[]
+
+  @@index([name], map: "queues_name")
+  @@index([strategy], map: "queues_strategy")
+  @@index([timeout], map: "queues_timeout")
+  @@index([retry], map: "queues_retry")
+  @@index([musiconhold], map: "queues_musiconhold")
 }
 
 enum queue_autopause_values {
