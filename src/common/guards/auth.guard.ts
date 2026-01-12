@@ -54,8 +54,8 @@ export class AuthGuard implements CanActivate {
 				id: string;
 				email: string;
 				nome: string;
-				isAdmin: boolean;
-				perfilId: string;
+				is_admin: boolean;
+				perfil_id: string;
 			};
 			
 			// Access token válido - popula request.user e permite continuar
@@ -63,8 +63,8 @@ export class AuthGuard implements CanActivate {
 				id: payload.id,
 				email: payload.email,
 				nome: payload.nome,
-				isAdmin: payload.isAdmin,
-				perfilId: payload.perfilId,
+				is_admin: payload.is_admin,
+				perfil_id: payload.perfil_id,
 			};
 			
 			return true;

@@ -4,7 +4,6 @@ import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.servi
 import { LoginDto } from "./dto/auth.dto";
 import { PasswordService } from "src/common/services/password.service";
 import { JwtService } from "@nestjs/jwt";
-import { Usuario } from "@prisma/client";
 import type { StringValue } from "ms";
 import { UsuarioPayload } from "src/common/decorators/usuario.decorator";
 
