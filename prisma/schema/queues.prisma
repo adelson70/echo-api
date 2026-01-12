@@ -12,7 +12,7 @@ model queue_members {
   reason_paused   String?          @db.VarChar(80)
 
   queueMembers ps_endpoints @relation(fields: [ramal_id], references: [id], onDelete: Cascade)
-  queue queues @relation(fields: [queue_name], references: [name], onDelete: Cascade)
+  queue queues @relation(fields: [queue_name], references: [id], onDelete: Cascade)
 
   @@id([queue_name, interface])
 }
@@ -28,6 +28,7 @@ model queue_rules {
 }
 
 model queues {
+  id                          String                  @unique @default(uuid())
   name                        String                  @id @db.VarChar(128) @unique
   displayname                 String                  @db.VarChar(128)
   musiconhold                 String?                 @db.VarChar(128)

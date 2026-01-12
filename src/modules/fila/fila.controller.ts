@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { FilaService } from "./fila.service";
-import { CreateFilaDto, FindFilaDto, ListFilaDto } from "./dto/fila.dto";
+import { CreateFilaDto, FindFilaDto, ListFilaDto, UpdateFilaDto } from "./dto/fila.dto";
 
 @ApiTags('Fila')
 @Controller('fila')
@@ -19,7 +19,7 @@ export class FilaController {
         return await this.filaService.list();
     }
 
-    @Get(':fila')
+    @Get(':id')
     @ApiOperation({ summary: 'Buscar uma fila' })
     @ApiResponse({
         status: 200,
@@ -27,9 +27,9 @@ export class FilaController {
         type: FindFilaDto,
     })
     async find(
-        @Param('fila') fila: string
+        @Param('id') filaId: string
     ): Promise<FindFilaDto> {
-        return await this.filaService.find(fila);
+        return await this.filaService.find(filaId);
     }
 
     @Post('create')
@@ -45,13 +45,27 @@ export class FilaController {
         return await this.filaService.create(createFilaDto);
     }
 
-    @Delete(':fila')
+    @Delete(':id')
     @ApiOperation({ summary: 'Deletar uma fila' })
     @ApiResponse({
         status: 200,
         description: 'Fila deletada com sucesso.',
     })
-    async delete(@Param('fila') fila: string): Promise<void> {
-        return await this.filaService.delete(fila);
+    async delete(@Param('id') filaId: string): Promise<void> {
+        return await this.filaService.delete(filaId);
+    }
+
+    @Put(':id')
+    @ApiOperation({ summary: 'Atualizar uma fila' })
+    @ApiResponse({
+        status: 200,
+        description: 'Fila atualizada com sucesso.',
+        type: UpdateFilaDto,
+    })
+    async update(
+        @Param('id') filaId: string, 
+        @Body() updateFilaDto: UpdateFilaDto
+    ): Promise<UpdateFilaDto> {
+        return await this.filaService.update(filaId, updateFilaDto);
     }
 }

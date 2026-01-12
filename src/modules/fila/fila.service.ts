@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
-import { CreateFilaDto, FilaDto, ListFilaDto } from "./dto/fila.dto";
+import { CreateFilaDto, FilaDto, ListFilaDto, UpdateFilaDto } from "./dto/fila.dto";
 import { Prisma, queue_members, queues } from "@prisma/client";
 import { FindFilaDto } from "./dto/fila.dto";
 
@@ -15,6 +15,7 @@ export class FilaService {
         try {
             const filas = await this.prismaRead.queues.findMany({
                 select: {
+                    id: true,
                     name: true,
                     displayname: true,
                     strategy: true,
@@ -33,18 +34,20 @@ export class FilaService {
 
             return this.mapFilaList(filas as unknown as Prisma.queuesGetPayload<{ include: { queue_members: true } }>[]);
         } catch (error) {
+            if (error instanceof HttpException) throw error;
             throw new InternalServerErrorException('Erro ao listar filas');
         }
     }
 
-    async find(fila: string): Promise<FindFilaDto> {
+    async find(filaId: string): Promise<FindFilaDto> {
 
         try {
             const filaEncontrada = await this.prismaRead.queues.findFirst({
                 where: {
-                    name: fila,
+                    id: filaId,
                 },
                 select: {
+                    id: true,
                     name: true,
                     displayname: true,
                     strategy: true,
@@ -59,7 +62,7 @@ export class FilaService {
                 },
             }) as unknown as Prisma.queuesGetPayload<{ include: { queue_members: true } }>;
 
-            if (!filaEncontrada) throw new NotFoundException(`Fila ${fila} não encontrada`);
+            if (!filaEncontrada) throw new NotFoundException('Fila não encontrada');
 
             return this.mapFila(filaEncontrada);
 
@@ -111,11 +114,11 @@ export class FilaService {
         }
     }
 
-    async delete(fila: string): Promise<void> {
+    async delete(filaId: string): Promise<void> {
         try {
             await this.prismaWrite.queues.delete({
                 where: {
-                    name: fila,
+                    id: filaId,
                 }
             });
 
@@ -128,8 +131,43 @@ export class FilaService {
         }
     }
 
+    async update(filaId: string, updateFilaDto: UpdateFilaDto): Promise<UpdateFilaDto> {
+        try {
+            if (Object.keys(updateFilaDto).length === 0) throw new BadRequestException('Nenhum dado para atualizar');
+
+            const filaExiste = await this.prismaRead.queues.findFirst({
+                where: {
+                    id: filaId,
+                },
+            });
+
+            if (!filaExiste) throw new NotFoundException('Fila não encontrada');
+
+            const data = {
+                displayname: updateFilaDto.nome || filaExiste.displayname,
+                strategy: updateFilaDto.estrategia || filaExiste.strategy,
+                timeout: updateFilaDto.tempoEspera || filaExiste.timeout,
+                retry: updateFilaDto.tentativas || filaExiste.retry,
+                musiconhold: updateFilaDto.musicaDeEspera || filaExiste.musiconhold,
+            }
+
+            const filaAtualizada = await this.prismaWrite.queues.update({
+                where: { id: filaId },
+                data
+            }) as unknown as Prisma.queuesGetPayload<{ include: { queue_members: true } }>;
+
+            return this.mapFila(filaAtualizada);
+            
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro ao atualizar fila');
+        }
+    }
+
     private mapFila(fila: Prisma.queuesGetPayload<{ include: { queue_members: true } }>): FilaDto {
         return {
+            id: fila.id,
             nomeIdentificador: fila.name,
             nome: fila.displayname,
             estrategia: fila.strategy,
