@@ -17,7 +17,7 @@ export class LogDto {
         description: 'ID do usuário',
         example: '123e4567-e89b-12d3-a456-426614174000',
     })
-    usuarioId: string | null;
+    usuario_id: string | null;
 
     @IsString()
     @ApiProperty({

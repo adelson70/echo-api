@@ -99,7 +99,7 @@ export class AuthGuard implements CanActivate {
 			// Cria log com status TENTATIVA usando usuarioId: null
 			this.logger.log(`[${method}] ${path} - IP: ${ip} - Ação: ${acao} - Módulo: ${modulo} - Status: ${LogStatus.TENTATIVA} - Motivo: ${reason}`);
 			await this.logService.create({
-				usuarioId: null,
+				usuario_id: null,
 				ip,
 				status: LogStatus.TENTATIVA,
 				acao,

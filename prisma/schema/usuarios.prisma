@@ -30,20 +30,20 @@ model Usuario {
     nome String @db.VarChar(255)
     email String @db.VarChar(255) @unique
     senha String @db.VarChar(255)
-    isAdmin Boolean @default(false)
-    perfilId String? @db.Uuid
-    lastLogin DateTime?
+    is_admin Boolean @default(false)
+    perfil_id String? @db.Uuid
+    last_login DateTime?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    perfil Perfil? @relation(fields: [perfilId], references: [id])
+    perfil Perfil? @relation(fields: [perfil_id], references: [id])
     permissoesUsuario PermissaoUsuario[]
     logs Log[]
 
     @@index([id], map: "usuario_id")
     @@index([email], map: "usuario_email")
-    @@index([perfilId], map: "usuario_perfil_id")
-    @@index([lastLogin], map: "usuario_last_login")
+    @@index([perfil_id], map: "usuario_perfil_id")
+    @@index([last_login], map: "usuario_last_login")
 
     @@map("usuarios")
 }
@@ -67,7 +67,7 @@ model Perfil {
 model PermissaoPerfil {
     id String @id @default(uuid()) @db.Uuid
     modulo Modulos
-    perfilId String @db.Uuid
+    perfil_id String @db.Uuid
     criar Boolean @default(true)
     ler Boolean @default(true)
     editar Boolean @default(true)
@@ -75,11 +75,11 @@ model PermissaoPerfil {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    perfil Perfil @relation(fields: [perfilId], references: [id])
+    perfil Perfil @relation(fields: [perfil_id], references: [id])
 
     @@index([id], map: "permissao_id")
     @@index([modulo], map: "permissao_modulo")
-    @@index([perfilId], map: "permissao_perfil_id")
+    @@index([perfil_id], map: "permissao_perfil_id")
     @@index([criar], map: "permissao_perfil_criar")
     @@index([ler], map: "permissao_perfil_ler")
     @@index([editar], map: "permissao_perfil_editar")
@@ -91,7 +91,7 @@ model PermissaoPerfil {
 model PermissaoUsuario {
     id String @id @default(uuid()) @db.Uuid
     modulo Modulos
-    usuarioId String @db.Uuid
+    usuario_id String @db.Uuid
     criar Boolean @default(true)
     ler Boolean @default(true)
     editar Boolean @default(true)
@@ -99,11 +99,11 @@ model PermissaoUsuario {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    usuario Usuario @relation(fields: [usuarioId], references: [id])
+    usuario Usuario @relation(fields: [usuario_id], references: [id])
 
     @@index([id], map: "permissao_usuario_id")
     @@index([modulo], map: "permissao_usuario_modulo")
-    @@index([usuarioId], map: "permissao_usuario_usuario_id")
+    @@index([usuario_id], map: "permissao_usuario_usuario_id")
     @@index([criar], map: "permissao_usuario_criar")
     @@index([ler], map: "permissao_usuario_ler")
     @@index([editar], map: "permissao_usuario_editar")
@@ -114,7 +114,7 @@ model PermissaoUsuario {
 
 model Log {
     id String @id @default(uuid()) @db.Uuid
-    usuarioId String? @db.Uuid
+    usuario_id String? @db.Uuid
     ip String @db.VarChar(255)
     status LogStatus
     acao LogActions
@@ -123,10 +123,10 @@ model Log {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    usuario Usuario? @relation(fields: [usuarioId], references: [id])
+    usuario Usuario? @relation(fields: [usuario_id], references: [id])
 
     @@index([id], map: "logs_id")
-    @@index([usuarioId], map: "logs_usuario_id")
+    @@index([usuario_id], map: "logs_usuario_id")
     @@index([status], map: "logs_status")
     @@index([acao], map: "logs_acao")
     @@index([modulo], map: "logs_modulo")

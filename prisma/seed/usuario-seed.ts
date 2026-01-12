@@ -13,7 +13,7 @@ export async function createUsuarioAdmin(
     const usuario = await prismaRead.usuario.findUnique({
         where: {
             email: usuarioAdmin.email,
-            isAdmin: true,
+            is_admin: true,
         },
     });
 
@@ -30,7 +30,7 @@ export async function createUsuarioAdmin(
     await prismaWrite.usuario.create({
         data: {
             ...usuarioAdmin,
-            isAdmin: true,
+            is_admin: true,
         }
     }).then(() => {
         console.log('Usuário admin criado com sucesso');

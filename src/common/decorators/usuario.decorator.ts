@@ -4,8 +4,8 @@ export interface UsuarioPayload {
     id: string;
     email: string;
     nome: string;
-    isAdmin: boolean;
-    perfilId: string | null;
+    is_admin: boolean;
+    perfil_id: string | null;
 } 
 
 export const Usuario = createParamDecorator(

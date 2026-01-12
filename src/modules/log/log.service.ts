@@ -28,7 +28,7 @@ export class LogService {
         try {
             const log = await this.prismaWrite.log.create({
                 data: {
-                    usuarioId: createLogDto.usuarioId ?? null,
+                    usuario_id: createLogDto.usuario_id ?? null,
                     ip: createLogDto.ip,
                     status: createLogDto.status,
                     acao: createLogDto.acao,

@@ -61,7 +61,7 @@ import {
       
       this.logService
         .create({
-          usuarioId: user.id,
+          usuario_id: user.id,
           ip,
           status: LogStatus.TENTATIVA,
           acao,

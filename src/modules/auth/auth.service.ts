@@ -38,7 +38,7 @@ export class AuthService {
     
             await this.prismaWrite.usuario.update({
                 where: { id: usuario.id },
-                data: { lastLogin: new Date() },
+                data: { last_login: new Date() },
             });
 
             return { refreshToken, accessToken, usuario };
@@ -71,8 +71,8 @@ export class AuthService {
             id: usuario.id,
             nome: usuario.nome,
             email: usuario.email,
-            isAdmin: usuario.isAdmin,
-            perfilId: usuario.perfilId
+            is_admin: usuario.is_admin,
+            perfil_id: usuario.perfil_id
         } as UsuarioPayload;
 
         const accessToken = await this.jwtService.signAsync(payload, {
