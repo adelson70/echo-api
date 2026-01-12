@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UsuarioService } from "./usuario.service";
-import { CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto } from "./dto/usuario.dto";
+import { CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto, UpdateUsuarioDto } from "./dto/usuario.dto";
 import { Usuario, type UsuarioPayload } from "src/common/decorators/usuario.decorator";
 
 @ApiTags('Usuario')
@@ -48,5 +48,19 @@ export class UsuarioController {
         @Usuario() usuario: UsuarioPayload,
     ): Promise<CreateUsuarioDto> {
         return await this.usuarioService.create(createUsuarioDto, usuario);
+    }
+
+    @Put(':id')
+    @ApiOperation({ summary: 'Atualizar um usuário' })
+    @ApiResponse({
+        status: 200,
+        description: 'Usuário atualizado com sucesso',
+        type: UpdateUsuarioDto,
+    })
+    async update(
+        @Param('id') id: string, 
+        @Body() updateUsuarioDto: UpdateUsuarioDto, 
+        @Usuario() usuario: UsuarioPayload): Promise<UpdateUsuarioDto> {
+        return await this.usuarioService.update(id, updateUsuarioDto, usuario);
     }
 }

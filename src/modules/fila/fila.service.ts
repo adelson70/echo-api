@@ -144,17 +144,17 @@ export class FilaService {
 
             if (!filaExiste) throw new NotFoundException('Fila não encontrada');
 
-            const data = {
-                displayname: updateFilaDto.nome || filaExiste.displayname,
-                strategy: updateFilaDto.estrategia || filaExiste.strategy,
-                timeout: updateFilaDto.tempoEspera || filaExiste.timeout,
-                retry: updateFilaDto.tentativas || filaExiste.retry,
-                musiconhold: updateFilaDto.musicaDeEspera || filaExiste.musiconhold,
-            }
+            // const data = {
+            //     displayname: updateFilaDto.nome || filaExiste.displayname,
+            //     strategy: updateFilaDto.estrategia || filaExiste.strategy,
+            //     timeout: updateFilaDto.tempoEspera || filaExiste.timeout,
+            //     retry: updateFilaDto.tentativas || filaExiste.retry,
+            //     musiconhold: updateFilaDto.musicaDeEspera || filaExiste.musiconhold,
+            // }
 
             const filaAtualizada = await this.prismaWrite.queues.update({
                 where: { id: filaId },
-                data
+                data: updateFilaDto,
             }) as unknown as Prisma.queuesGetPayload<{ include: { queue_members: true } }>;
 
             return this.mapFila(filaAtualizada);

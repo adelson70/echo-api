@@ -84,3 +84,21 @@ export class ListUsuarioDto extends OmitType(
 }
 export class FindUsuarioDto extends ListUsuarioDto {}
 export class CreateUsuarioDto extends OmitType(UsuarioDto, ['id', 'last_login'] as const) {}
+export class UpdateUsuarioDto extends PartialType(
+    OmitType(UsuarioDto, ['id', 'last_login'] as const)
+) {
+    @IsOptional()
+    declare nome: string;
+
+    @IsOptional()
+    declare email: string;
+
+    @IsOptional()
+    declare senha: string;
+
+    @IsOptional()
+    declare is_admin: boolean;
+
+    @IsOptional()
+    declare perfil_id: string;
+}
