@@ -72,3 +72,13 @@ export class FilaDto {
 
 export class CreateFilaDto extends FilaDto {}
 export class UpdateFilaDto extends FilaDto {}
+
+export class ListFilaDto extends FilaDto {
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        description: 'Ramais da fila',
+        example: ['1001', '1002', '1003'],
+    })
+    ramais: string[];
+}
