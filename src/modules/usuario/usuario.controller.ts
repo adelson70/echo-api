@@ -63,4 +63,16 @@ export class UsuarioController {
         @Usuario() usuario: UsuarioPayload): Promise<UpdateUsuarioDto> {
         return await this.usuarioService.update(id, updateUsuarioDto, usuario);
     }
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Deletar um usuário' })
+    @ApiResponse({
+        status: 200,
+        description: 'Usuário deletado com sucesso',
+    })
+    async delete(
+        @Param('id') id: string, 
+        @Usuario() usuario: UsuarioPayload): Promise<void> {
+        return await this.usuarioService.delete(id, usuario);
+    }
 }

@@ -159,4 +159,21 @@ export class UsuarioService {
             throw new InternalServerErrorException('Erro ao atualizar usuário');
         }
     }
+
+    async delete(id: string, usuario: UsuarioPayload): Promise<void> {
+        try {
+            const usuarioEncontrado = await this.prismaRead.usuario.findUnique({ where: { id } });
+
+            if (!usuarioEncontrado) throw new NotFoundException('Usuário não encontrado');
+
+            if (!usuario.is_admin && usuarioEncontrado.is_admin) throw new ForbiddenException('Você não tem permissão para deletar um usuário que é administrador');
+
+            await this.prismaWrite.usuario.delete({ where: { id } });
+        }
+        catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            throw new InternalServerErrorException('Erro ao deletar usuário');
+        }
+    }
 }

@@ -36,7 +36,7 @@ model Usuario {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    perfil Perfil? @relation(fields: [perfil_id], references: [id])
+    perfil Perfil? @relation(fields: [perfil_id], references: [id], onDelete: SetNull)
     permissoesUsuario PermissaoUsuario[]
     logs Log[]
 
@@ -75,7 +75,7 @@ model PermissaoPerfil {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    perfil Perfil @relation(fields: [perfil_id], references: [id])
+    perfil Perfil @relation(fields: [perfil_id], references: [id], onDelete: Cascade)
 
     @@index([id], map: "permissao_id")
     @@index([modulo], map: "permissao_modulo")
@@ -99,7 +99,7 @@ model PermissaoUsuario {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    usuario Usuario @relation(fields: [usuario_id], references: [id])
+    usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
 
     @@index([id], map: "permissao_usuario_id")
     @@index([modulo], map: "permissao_usuario_modulo")
@@ -123,7 +123,7 @@ model Log {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    usuario Usuario? @relation(fields: [usuario_id], references: [id])
+    usuario Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
 
     @@index([id], map: "logs_id")
     @@index([usuario_id], map: "logs_usuario_id")
