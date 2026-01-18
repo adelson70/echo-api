@@ -51,4 +51,14 @@ export class PerfilController {
     async update(@Param('id') id: string, @Body() updatePerfilDto: UpdatePerfilDto): Promise<UpdatePerfilDto> {
         return await this.perfilService.update(id, updatePerfilDto);
     }
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Deletar um perfil' })
+    @ApiResponse({
+        status: 200,
+        description: 'Perfil deletado com sucesso',
+    })
+    async delete(@Param('id') id: string): Promise<void> {
+        return await this.perfilService.delete(id);
+    }
 }

@@ -147,6 +147,30 @@ export class PerfilService {
         }
     }
 
+    async delete(id: string): Promise<void> {
+        try {
+            const perfilExistente = await this.prismaRead.perfil.findUnique({
+                where: {
+                    id: id,
+                },
+            })
+
+            if (!perfilExistente) throw new NotFoundException(`Perfil ${id} não encontrado`);
+
+            await this.prismaWrite.perfil.delete({
+                where: {
+                    id: id,
+                },
+            })
+
+            return;
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            console.log(error);
+            throw new InternalServerErrorException('Erro ao deletar perfil');
+        }
+    }
+    
     private async mapPerfil(perfil: any): Promise<FindPerfilDto> {
         return {
             id: perfil.id,
