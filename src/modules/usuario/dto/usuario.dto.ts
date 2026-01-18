@@ -3,6 +3,7 @@ import { ApiProperty, OmitType, PartialType, PickType } from "@nestjs/swagger";
 import { PasswordValidator } from "src/common/decorators/password.decorator";
 import { PerfilDto, PermissaoDto } from "src/modules/sistema/dto/sistema.dto";
 import { Modulos } from "@prisma/client";
+import { FindPerfilDto } from "src/modules/perfil/dto/perfil.dto";
 
 export class UsuarioDto {
     @IsString()
@@ -63,27 +64,18 @@ export class UsuarioDto {
     last_login: Date;
 }
 
-export class ListUsuarioDto extends OmitType(
-    UsuarioDto, ['senha'] as const
-) {
-    @IsArray()
-    @IsNotEmpty()
-    @ApiProperty({
-        description: 'Permissões do usuário',
-        example: [{ modulo: 'usuario', criar: true, ler: true, editar: true, deletar: true }],
-    })
-    permissoesUsuario: PermissaoDto[];
-
+export class ListUsuarioDto extends OmitType( UsuarioDto, ['senha'] as const ) {}
+export class FindUsuarioDto extends OmitType( UsuarioDto, ['senha', 'perfil_id'] as const ) {
+    
     @IsObject()
     @IsOptional()
     @ApiProperty({
         description: 'Perfil do usuário',
-        example: { nome: 'Administrador', permissoes: [{ modulo: 'usuario', criar: true, ler: true, editar: true, deletar: true }] },
+        example: { id: '123e4567-e89b-12d3-a456-426614174000', nome: 'Administrador' },
         required: false,
     })
-    perfil: PerfilDto | null = null;
+    perfil: object;
 }
-export class FindUsuarioDto extends ListUsuarioDto {}
 export class CreateUsuarioDto extends OmitType(UsuarioDto, ['id', 'last_login'] as const) {}
 export class UpdateUsuarioDto extends PartialType(
     OmitType(UsuarioDto, ['id', 'last_login'] as const)

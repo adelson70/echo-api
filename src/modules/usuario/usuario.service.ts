@@ -28,29 +28,6 @@ export class UsuarioService {
                     is_admin: true,
                     perfil_id: true,
                     last_login: true,
-                    perfil: {
-                        select: {
-                            nome: true,
-                            permissoes: {
-                                select: {
-                                    modulo: true,
-                                    criar: true,
-                                    ler: true,
-                                    editar: true,
-                                    deletar: true,
-                                }
-                            }
-                        }
-                    },
-                    permissoesUsuario: {
-                        select: {
-                            modulo: true,
-                            criar: true,
-                            ler: true,
-                            editar: true,
-                            deletar: true,
-                        }
-                    }
                 } 
             }) as ListUsuarioDto[];
             
@@ -73,20 +50,11 @@ export class UsuarioService {
                 nome: true,
                 email: true,
                 is_admin: true,
-                perfil_id: true,
                 last_login: true,
                 perfil: {
                     select: {
+                        id: true,
                         nome: true,
-                        permissoes: {
-                            select: {
-                                modulo: true,
-                                criar: true,
-                                ler: true,
-                                editar: true,
-                                deletar: true,
-                            }
-                        }
                     }
                 },
                 permissoesUsuario: {
