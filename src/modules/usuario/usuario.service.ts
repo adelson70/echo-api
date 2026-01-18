@@ -177,7 +177,7 @@ export class UsuarioService {
         }
     }
 
-    async addPermissao(addPermissaoDto: AddPermissaoDto): Promise<void> {
+    async togglePermissao(addPermissaoDto: AddPermissaoDto): Promise<void> {
         try {
             // console.log(addPermissaoDto);
 
@@ -186,9 +186,6 @@ export class UsuarioService {
             const permissoesParaAtualizar = addPermissaoDto.permissoes.filter(permissao => permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
 
             const permissoesParaCriar = addPermissaoDto.permissoes.filter(permissao => !permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
-
-            console.log(permissoesParaAtualizar);
-            console.log(permissoesParaCriar);
 
             // SE EXISTEM PERMISSÕES, ATUALIZA AS PERMISSÕES
             if (permissoesParaAtualizar.length > 0 ) {

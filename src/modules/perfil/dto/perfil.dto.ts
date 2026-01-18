@@ -49,3 +49,21 @@ export class ListPerfilDto extends OmitType(PerfilDto, ['permissoes']) {}
 export class FindPerfilDto extends PerfilDto {}
 export class CreatePerfilDto extends OmitType( PerfilDto, ['id', 'quantidadeUsuarios'] as const ) {}
 export class UpdatePerfilDto extends OmitType( PerfilDto, ['id', 'quantidadeUsuarios', 'permissoes'] as const ) {}
+
+export class AddPermissaoDto {
+    @IsUUID()
+    @IsNotEmpty()
+    @ApiProperty({
+        description: 'ID do perfil',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    })
+    perfil_id: string;
+
+    @IsArray()
+    @IsNotEmpty()
+    @ApiProperty({
+        description: 'Permissões',
+        example: [{ modulo: Modulos.USUARIO, criar: true, ler: true, editar: true, deletar: true }],
+    })
+    permissoes: PermissaoDto[];
+}

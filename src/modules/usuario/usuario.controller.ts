@@ -90,7 +90,7 @@ export class UsuarioController {
     })
     async addPermissao(
         @Body() addPermissaoDto: AddPermissaoDto): Promise<void> {
-        return await this.usuarioService.addPermissao(addPermissaoDto);
+        return await this.usuarioService.togglePermissao(addPermissaoDto);
     }
 
 }

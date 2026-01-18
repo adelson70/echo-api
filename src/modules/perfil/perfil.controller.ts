@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { PerfilService } from "./perfil.service";
-import { CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
+import { AddPermissaoDto, CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
 
 @ApiTags('Perfil')
 @Controller('perfil')
@@ -60,5 +60,18 @@ export class PerfilController {
     })
     async delete(@Param('id') id: string): Promise<void> {
         return await this.perfilService.delete(id);
+    }
+
+    @Post('permissao/toggle')
+    @ApiOperation({ summary: 'Adicionar ou Atualizar permissão de um perfil' })
+    @ApiBody({
+        type: AddPermissaoDto,
+    })
+    @ApiResponse({
+        status: 201,
+        description: 'Permissões atualizadas com sucesso',
+    })
+    async addPermissao(@Body() addPermissaoDto: AddPermissaoDto): Promise<void> {
+        return await this.perfilService.togglePermissao(addPermissaoDto);
     }
 }

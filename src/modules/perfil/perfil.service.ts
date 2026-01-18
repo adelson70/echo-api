@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
-import { CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
+import { AddPermissaoDto, CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
 
 @Injectable()
 export class PerfilService {
@@ -170,7 +170,58 @@ export class PerfilService {
             throw new InternalServerErrorException('Erro ao deletar perfil');
         }
     }
-    
+
+    async togglePermissao(addPermissaoDto: AddPermissaoDto): Promise<void> {
+        try {
+            const permissoesExistentes = await this.prismaRead.permissaoPerfil.findMany({ where: { perfil_id: addPermissaoDto.perfil_id }, select: { modulo: true } });
+
+            const permissoesParaAtualizar = addPermissaoDto.permissoes.filter(permissao => permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
+
+            const permissoesParaCriar = addPermissaoDto.permissoes.filter(permissao => !permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
+
+            // SE EXISTEM PERMISSÕES, ATUALIZA AS PERMISSÕES
+            if (permissoesParaAtualizar.length > 0 ) {
+                await this.prismaWrite.$transaction(
+                    permissoesParaAtualizar.map(permissao => 
+                        this.prismaWrite.permissaoPerfil.updateMany({
+                            where: { modulo: permissao.modulo, perfil_id: addPermissaoDto.perfil_id },
+                            data: {
+                                criar: permissao.criar,
+                                ler: permissao.ler,
+                                editar: permissao.editar,
+                                deletar: permissao.deletar,
+                            }
+                        })
+                    )
+                )
+            }
+
+            // SE NÃO EXISTEM PERMISSÕES, CRIA AS PERMISSÕES
+            if (permissoesParaCriar.length > 0 ) {
+                await this.prismaWrite.$transaction(async (tx) => {
+                    await tx.permissaoPerfil.createMany({
+                        data: permissoesParaCriar.map(permissao => ({
+                            perfil_id: addPermissaoDto.perfil_id,
+                            modulo: permissao.modulo,
+                            criar: permissao.criar,
+                            ler: permissao.ler,
+                            editar: permissao.editar,
+                            deletar: permissao.deletar,
+                        }))
+                    })
+                })
+            }
+            return;
+            
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            console.log(error);
+
+            throw new InternalServerErrorException('Erro ao adicionar permissão ao perfil');
+        }
+    }
+
     private async mapPerfil(perfil: any): Promise<FindPerfilDto> {
         return {
             id: perfil.id,
