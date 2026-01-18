@@ -1,15 +1,24 @@
-import { IsString, IsNotEmpty, IsBoolean, IsArray, ValidateNested } from "class-validator";
+import { IsString, IsNotEmpty, IsBoolean, IsArray, ValidateNested, IsUUID, IsEnum } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
+import { Modulos } from "@prisma/client";
 
 export class PermissaoDto {
-    @IsString()
+    @IsUUID()
+    @IsNotEmpty()
+    @ApiProperty({
+        description: 'ID da permissão',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    })
+    id: string;
+
+    @IsEnum(Modulos)
     @IsNotEmpty()
     @ApiProperty({
         description: 'Módulo da permissão',
-        example: 'usuario',
+        example: Modulos.USUARIO,
     })
-    modulo: string;
+    modulo: Modulos;
 
     @IsBoolean()
     @IsNotEmpty()

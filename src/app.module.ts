@@ -36,8 +36,6 @@ import { Reflector } from '@nestjs/core';
     SistemaModule,
     LogModule,
     AuthModule,
-  
-  
   ],
   controllers: [AppController],
   providers: [

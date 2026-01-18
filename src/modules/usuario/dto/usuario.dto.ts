@@ -1,7 +1,8 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsBoolean, IsArray, IsObject } from "class-validator";
+import { IsString, IsNotEmpty, IsEmail, IsOptional, IsBoolean, IsArray, IsObject, IsEnum, IsUUID } from "class-validator";
 import { ApiProperty, OmitType, PartialType, PickType } from "@nestjs/swagger";
 import { PasswordValidator } from "src/common/decorators/password.decorator";
 import { PerfilDto, PermissaoDto } from "src/modules/sistema/dto/sistema.dto";
+import { Modulos } from "@prisma/client";
 
 export class UsuarioDto {
     @IsString()
@@ -101,4 +102,22 @@ export class UpdateUsuarioDto extends PartialType(
 
     @IsOptional()
     declare perfil_id: string;
+}
+
+export class AddPermissaoDto {
+    @IsUUID()
+    @IsNotEmpty()
+    @ApiProperty({
+        description: 'ID do usuário',
+        example: '123e4567-e89b-12d3-a456-426614174000',
+    })
+    usuario_id: string;
+
+    @IsArray()
+    @IsNotEmpty()
+    @ApiProperty({
+        description: 'Permissões',
+        example: [{ modulo: Modulos.USUARIO, criar: true, ler: true, editar: true, deletar: true }],
+    })
+    permissoes: PermissaoDto[];
 }
