@@ -1,9 +1,7 @@
-import { HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
-import { FindPerfilDto, ListPerfilDto } from "./dto/perfil.dto";
-import { PermissaoDto } from "../sistema/dto/sistema.dto";
-import { Perfil } from "@prisma/client";
+import { CreatePerfilDto, FindPerfilDto, ListPerfilDto } from "./dto/perfil.dto";
 
 @Injectable()
 export class PerfilService {
@@ -64,6 +62,51 @@ export class PerfilService {
             if (error instanceof HttpException) throw error;
             console.log(error);
             throw new InternalServerErrorException('Erro ao buscar perfil');
+        }
+    }
+
+    async create(createPerfilDto: CreatePerfilDto): Promise<CreatePerfilDto> {
+        try {
+            const perfilExistente = await this.prismaRead.perfil.findUnique({
+                where: {
+                    nome: createPerfilDto.nome,
+                },
+            })
+
+            if (perfilExistente) throw new BadRequestException(`Perfil ${createPerfilDto.nome} já existe`, { cause: 'Perfil já existe' });
+
+            const perfilCriado = await this.prismaWrite.perfil.create({
+                data: {
+                    nome: createPerfilDto.nome,
+                    descricao: createPerfilDto.descricao || '',
+                    permissoes: {
+                        create: createPerfilDto.permissoes.map(permissao => ({
+                            modulo: permissao.modulo,
+                            criar: permissao.criar,
+                            ler: permissao.ler,
+                            editar: permissao.editar,
+                            deletar: permissao.deletar,
+                        })),
+                    },
+                },
+                select: {
+                    id: true,
+                    nome: true,
+                    descricao: true,
+                    permissoes: true,
+                    _count: {
+                        select: {
+                            usuarios: true,
+                        }
+                    }
+                }
+            })
+
+            return this.mapPerfil(perfilCriado);
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            console.log(error);
+            throw new InternalServerErrorException('Erro ao criar perfil');
         }
     }
 

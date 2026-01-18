@@ -47,3 +47,5 @@ export class PerfilDto {
 
 export class ListPerfilDto extends OmitType(PerfilDto, ['permissoes']) {}
 export class FindPerfilDto extends PerfilDto {}
+export class CreatePerfilDto extends OmitType( PerfilDto, ['id', 'quantidadeUsuarios'] as const ) {}
+export class UpdatePerfilDto extends OmitType( PerfilDto, ['id', 'quantidadeUsuarios', 'permissoes'] as const ) {}
