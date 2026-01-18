@@ -17,6 +17,7 @@ import { RelatorioModule } from './modules/relatorio/relatorio.module';
 import { SistemaModule } from './modules/sistema/sistema.module';
 import { LogModule } from './modules/log/log.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { PerfilModule } from './modules/perfil/perfil.module';
 import { Reflector } from '@nestjs/core';
 
 @Module({
@@ -36,6 +37,8 @@ import { Reflector } from '@nestjs/core';
     SistemaModule,
     LogModule,
     AuthModule,
+    PerfilModule,
+  
   ],
   controllers: [AppController],
   providers: [
