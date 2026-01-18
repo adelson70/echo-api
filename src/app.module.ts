@@ -19,7 +19,7 @@ import { LogModule } from './modules/log/log.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PerfilModule } from './modules/perfil/perfil.module';
 import { Reflector } from '@nestjs/core';
-
+import { AmiModule } from './modules/ami/ami.module';
 @Module({
   imports: [
     PrismaModule,
@@ -38,7 +38,7 @@ import { Reflector } from '@nestjs/core';
     LogModule,
     AuthModule,
     PerfilModule,
-  
+    AmiModule,
   ],
   controllers: [AppController],
   providers: [

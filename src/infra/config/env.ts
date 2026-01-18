@@ -22,6 +22,10 @@ export class EnvironmentValidator {
       'BCRYPT_SALT',
       'JWT_EXPIRE_AT',
       'JWT_EXPIRE_RT',
+      'AMI_HOST',
+      'AMI_PORT',
+      'AMI_USERNAME',
+      'AMI_SECRET',
     ];
 
     const missingVars: string[] = [];
