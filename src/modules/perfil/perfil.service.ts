@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
-import { CreatePerfilDto, FindPerfilDto, ListPerfilDto } from "./dto/perfil.dto";
+import { CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
 
 @Injectable()
 export class PerfilService {
@@ -107,6 +107,43 @@ export class PerfilService {
             if (error instanceof HttpException) throw error;
             console.log(error);
             throw new InternalServerErrorException('Erro ao criar perfil');
+        }
+    }
+
+    async update(id: string, updatePerfilDto: UpdatePerfilDto): Promise<UpdatePerfilDto> {
+        try {
+            const perfilExistente = await this.prismaRead.perfil.findUnique({
+                where: {
+                    id: id,
+                },
+            })
+
+            if (!perfilExistente) throw new NotFoundException(`Perfil ${id} não encontrado`);
+
+            const perfilAtualizado = await this.prismaWrite.perfil.update({
+                where: {
+                    id: id,
+                },
+                data: updatePerfilDto,
+                select: {
+                    id: true,
+                    nome: true,
+                    descricao: true,
+                    permissoes: true,
+                    _count: {
+                        select: {
+                            usuarios: true,
+                        }
+                    }
+                }
+            })
+
+            return this.mapPerfil(perfilAtualizado);
+
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            console.log(error);
+            throw new InternalServerErrorException('Erro ao atualizar perfil');
         }
     }
 

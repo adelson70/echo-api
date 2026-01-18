@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { PerfilService } from "./perfil.service";
-import { CreatePerfilDto, FindPerfilDto, ListPerfilDto } from "./dto/perfil.dto";
+import { CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
 
 @ApiTags('Perfil')
 @Controller('perfil')
@@ -39,5 +39,16 @@ export class PerfilController {
     })
     async create(@Body() createPerfilDto: CreatePerfilDto): Promise<CreatePerfilDto> {
         return await this.perfilService.create(createPerfilDto);
+    }
+
+    @Put(':id')
+    @ApiOperation({ summary: 'Atualizar um perfil' })
+    @ApiResponse({
+        status: 200,
+        description: 'Perfil atualizado com sucesso',
+        type: UpdatePerfilDto,
+    })
+    async update(@Param('id') id: string, @Body() updatePerfilDto: UpdatePerfilDto): Promise<UpdatePerfilDto> {
+        return await this.perfilService.update(id, updatePerfilDto);
     }
 }
