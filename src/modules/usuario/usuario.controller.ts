@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UsuarioService } from "./usuario.service";
-import { AddPermissaoDto, CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto, UpdateUsuarioDto } from "./dto/usuario.dto";
+import { AddPermissaoUsuarioDto, CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto, UpdateUsuarioDto } from "./dto/usuario.dto";
 import { Usuario, type UsuarioPayload } from "src/common/decorators/usuario.decorator";
 import { Modulos } from "@prisma/client";
 
@@ -80,16 +80,16 @@ export class UsuarioController {
     @Post('permissao/toggle')
     @ApiOperation({ summary: 'Adicionar ou Atualizar permissão de um usuário' })
     @ApiBody({
-        type: AddPermissaoDto,
+        type: AddPermissaoUsuarioDto,
     })
     @ApiResponse({
         status: 201,
         description: 'Permissões atualizadas com sucesso',
-        type: AddPermissaoDto,
+        type: AddPermissaoUsuarioDto,
         example: [{ modulo: Modulos.USUARIO, criar: true, ler: true, editar: true, deletar: true }],
     })
     async addPermissao(
-        @Body() addPermissaoDto: AddPermissaoDto): Promise<void> {
+        @Body() addPermissaoDto: AddPermissaoUsuarioDto): Promise<void> {
         return await this.usuarioService.togglePermissao(addPermissaoDto);
     }
 

@@ -50,7 +50,7 @@ export class FindPerfilDto extends PerfilDto {}
 export class CreatePerfilDto extends OmitType( PerfilDto, ['id', 'quantidadeUsuarios'] as const ) {}
 export class UpdatePerfilDto extends OmitType( PerfilDto, ['id', 'quantidadeUsuarios', 'permissoes'] as const ) {}
 
-export class AddPermissaoDto {
+export class AddPermissaoPerfilDto {
     @IsUUID()
     @IsNotEmpty()
     @ApiProperty({

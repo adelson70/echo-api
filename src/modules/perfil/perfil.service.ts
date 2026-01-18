@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
-import { AddPermissaoDto, CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
+import { AddPermissaoPerfilDto, CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
 
 @Injectable()
 export class PerfilService {
@@ -171,7 +171,7 @@ export class PerfilService {
         }
     }
 
-    async togglePermissao(addPermissaoDto: AddPermissaoDto): Promise<void> {
+    async togglePermissao(addPermissaoDto: AddPermissaoPerfilDto): Promise<void> {
         try {
             const permissoesExistentes = await this.prismaRead.permissaoPerfil.findMany({ where: { perfil_id: addPermissaoDto.perfil_id }, select: { modulo: true } });
 

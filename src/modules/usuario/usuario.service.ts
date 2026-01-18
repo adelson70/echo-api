@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
-import { AddPermissaoDto, CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto, UpdateUsuarioDto } from "./dto/usuario.dto";
+import { AddPermissaoUsuarioDto, CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto, UpdateUsuarioDto } from "./dto/usuario.dto";
 import { UsuarioPayload } from "src/common/decorators/usuario.decorator";
 import { Prisma } from "@prisma/client";
 
@@ -145,7 +145,7 @@ export class UsuarioService {
         }
     }
 
-    async togglePermissao(addPermissaoDto: AddPermissaoDto): Promise<void> {
+    async togglePermissao(addPermissaoDto: AddPermissaoUsuarioDto): Promise<void> {
         try {
             // console.log(addPermissaoDto);
 

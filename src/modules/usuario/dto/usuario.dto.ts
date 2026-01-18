@@ -96,7 +96,7 @@ export class UpdateUsuarioDto extends PartialType(
     declare perfil_id: string;
 }
 
-export class AddPermissaoDto {
+export class AddPermissaoUsuarioDto {
     @IsUUID()
     @IsNotEmpty()
     @ApiProperty({
