@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { PerfilService } from "./perfil.service";
-import { ListPerfilDto } from "./dto/perfil.dto";
+import { FindPerfilDto, ListPerfilDto } from "./dto/perfil.dto";
 
 @ApiTags('Perfil')
 @Controller('perfil')
@@ -17,5 +17,16 @@ export class PerfilController {
     })
     async list(): Promise<ListPerfilDto[]> {
         return await this.perfilService.list();
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Buscar um perfil' })
+    @ApiResponse({
+        status: 200,
+        description: 'Perfil encontrado com sucesso',
+        type: FindPerfilDto,
+    })
+    async find(@Param('id') id: string): Promise<FindPerfilDto> {
+        return await this.perfilService.find(id);
     }
 }

@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { Modulos } from "@prisma/client";
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { PermissaoDto } from "src/modules/sistema/dto/sistema.dto";
@@ -45,4 +45,5 @@ export class PerfilDto {
     quantidadeUsuarios: number;
 }
 
-export class ListPerfilDto extends PerfilDto {}
+export class ListPerfilDto extends OmitType(PerfilDto, ['permissoes']) {}
+export class FindPerfilDto extends PerfilDto {}
