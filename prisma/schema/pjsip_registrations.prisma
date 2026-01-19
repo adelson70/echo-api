@@ -22,5 +22,7 @@ model ps_registrations {
   security_mechanisms      String?                      @db.VarChar(512)
   user_agent               String?                      @db.VarChar(255)
 
+  registrationRelation ps_endpoints? @relation(fields: [id], references: [id], onDelete: Cascade)
+
   @@index([id], map: "ps_registrations_id")
 }
