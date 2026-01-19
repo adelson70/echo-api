@@ -144,12 +144,18 @@ model ps_endpoints {
   overlap_context                    String?                                     @db.VarChar(80)
   tenantid                           String?                                     @db.VarChar(80)
   suppress_moh_on_sendonly           ast_bool_values?
+  tipo_endpoint                      tipo_endpoint_values?                       @default(ramal)
 
   authsRelation ps_auths?
   aorsRelation  ps_aors?
   queueMembers queue_members[]
 
   @@index([id], map: "ps_endpoints_id")
+}
+
+enum tipo_endpoint_values {
+  ramal
+  tronco
 }
 
 enum pjsip_100rel_values_v2 {

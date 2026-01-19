@@ -3,6 +3,7 @@ import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
 import { CreateLoteRamalDto, CreateRamalDto, FindRamalDto, ListRamalDto, RamalDto, UpdateRamalDto } from "./dto/ramal.dto";
 import { PasswordService } from "src/common/services/password.service";
+import { tipo_endpoint_values } from "@prisma/client";
 
 @Injectable()
 export class RamalService {
@@ -16,6 +17,9 @@ export class RamalService {
     async list(): Promise<ListRamalDto[]> {
         try {
             const ramais = await this.prismaRead.ps_endpoints.findMany({
+                where: {
+                    tipo_endpoint: tipo_endpoint_values.ramal
+                },
                 select: {
                     id: true,
                     displayname: true,
@@ -52,7 +56,8 @@ export class RamalService {
         try {
             const ramalEncontrado = await this.prismaRead.ps_endpoints.findFirst({
                 where: {
-                    id: ramal
+                    id: ramal,
+                    tipo_endpoint: tipo_endpoint_values.ramal
                 },
                 select: {
                     id: true,
@@ -112,6 +117,7 @@ export class RamalService {
                         direct_media: 'no',
                         force_rport: 'yes',
                         rtp_symmetric: 'yes',
+                        tipo_endpoint: tipo_endpoint_values.ramal,
                         aorsRelation: {
                             create: {
                                 max_contacts: ramalDto.maximoContatos
