@@ -4,12 +4,14 @@ import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.servi
 import { AddPermissaoUsuarioDto, CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto, UpdateUsuarioDto } from "./dto/usuario.dto";
 import { UsuarioPayload } from "src/common/decorators/usuario.decorator";
 import { Prisma } from "@prisma/client";
+import { PasswordService } from "src/common/services/password.service";
 
 @Injectable()
 export class UsuarioService {
     constructor(
         private readonly prismaRead: PrismaReadService, 
-        private readonly prismaWrite: PrismaWriteService) 
+        private readonly prismaWrite: PrismaWriteService,
+        private readonly passwordService: PasswordService) 
     {}
 
     async list(usuario: UsuarioPayload): Promise<ListUsuarioDto[]> {
@@ -93,13 +95,15 @@ export class UsuarioService {
                 if (!perfil) throw new BadRequestException('Perfil não encontrado');
             }
 
+            createUsuarioDto.senha = await this.passwordService.generateHash(createUsuarioDto.senha);
+
             const usuarioCriado = await this.prismaWrite.usuario.create({ data: createUsuarioDto });
 
             return usuarioCriado as CreateUsuarioDto;
             
         } catch (error) {
             if (error instanceof HttpException) throw error;
-
+            console.log(error);
             throw new InternalServerErrorException('Erro ao criar usuário');
         }
     }

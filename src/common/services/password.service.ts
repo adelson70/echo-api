@@ -45,7 +45,7 @@ export class PasswordService {
   }
 
   async generateHash(password: string): Promise<string> {
-    return await bcrypt.hash(password, process.env.BCRYPT_SALT_ROUNDS);
+    return await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS as string));
   }
 
   async validateHash(password: string, hash: string): Promise<boolean> {

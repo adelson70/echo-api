@@ -1,6 +1,6 @@
 process.loadEnvFile();
 
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
@@ -13,6 +13,8 @@ import basicAuth from 'express-basic-auth';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { JwtService } from '@nestjs/jwt';
+import { PermissaoGuard } from './common/guards/permissao.guard';
+import { PrismaReadService } from './infra/database/prisma/prisma-read.service';
 
 z.config(z.locales.pt());
 
@@ -52,6 +54,7 @@ async function bootstrap() {
   );
 
   app.useGlobalGuards(new RateLimitGuard());
+  app.useGlobalGuards(new PermissaoGuard(new Reflector(), app.get(PrismaReadService)));
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     transform: true,
