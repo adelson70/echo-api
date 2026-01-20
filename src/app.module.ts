@@ -20,6 +20,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PerfilModule } from './modules/perfil/perfil.module';
 import { Reflector } from '@nestjs/core';
 import { AmiModule } from './modules/ami/ami.module';
+import { SshModule } from './infra/ssh/ssh.module';
+
 @Module({
   imports: [
     PrismaModule,
@@ -39,6 +41,7 @@ import { AmiModule } from './modules/ami/ami.module';
     AuthModule,
     PerfilModule,
     AmiModule,
+    SshModule,
   ],
   controllers: [AppController],
   providers: [

@@ -26,6 +26,9 @@ export class EnvironmentValidator {
       'AMI_PORT',
       'AMI_USERNAME',
       'AMI_SECRET',
+      'ASTERISK_SSH_HOST',
+      'ASTERISK_SSH_USER',
+      'ASTERISK_SSH_PASSWORD',
     ];
 
     const missingVars: string[] = [];
