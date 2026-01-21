@@ -1,10 +1,206 @@
 model extensions {
   id       BigInt @id @default(autoincrement())
-  context  String @db.VarChar(40)
+  context  context_values @default(teste)
   exten    String @db.VarChar(40)
   priority Int
-  app      String @db.VarChar(40)
+  app      app_values
   appdata  String @db.VarChar(256)
 
   @@unique([context, exten, priority])
+}
+
+enum context_values {
+  teste
+  entrada
+  saida
+  interno
+}
+
+enum app_values {
+  AddQueueMember        /// Adiciona dinamicamente um membro a uma fila
+  ADSIProg              /// Carrega scripts ADSI em telefones compatíveis
+  AELSub                /// Executa uma sub-rotina criada com AEL
+  AgentLogin            /// Login de um agente
+  AgentRequest          /// Solicita um agente para atender a chamada
+  AGI                   /// Executa um script AGI
+  AlarmReceiver         /// Recebe relatórios de alarmes (painéis de segurança)
+  AMD                   /// Detecta secretária eletrônica
+  Answer                /// Atende a chamada
+  AttendedTransfer      /// Transferência assistida
+  AudioSocket           /// Envia/recebe áudio via socket TCP
+  Authenticate          /// Autentica um usuário
+  BackGround            /// Toca áudio aguardando dígitos
+  BackgroundDetect      /// Toca áudio com detecção de fala
+  BlindTransfer         /// Transferência cega
+  Bridge                /// Conecta dois canais
+  BridgeAdd             /// Adiciona canal a uma bridge existente
+  BridgeWait            /// Coloca chamada em espera numa bridge
+  Broadcast             /// Transmite áudio para múltiplos canais
+  Busy                  /// Indica ocupado
+  CallCompletionCancel  /// Cancela serviço de call completion
+  CallCompletionRequest /// Solicita call completion
+  CELGenUserEvent       /// Gera evento personalizado no CEL
+  ChanIsAvail           /// Verifica disponibilidade de canal
+  ChannelRedirect       /// Redireciona canal para outro destino
+  ChanSpy               /// Escuta um canal
+  ClearHash             /// Limpa um hash do Asterisk
+  ConfBridge            /// Sala de conferência
+  ConfKick              /// Remove participante da conferência
+  Congestion            /// Indica congestionamento
+  ContinueWhile         /// Continua loop While
+  ControlPlayback       /// Controle de reprodução de áudio
+  DAHDIScan             /// Monitora canais DAHDI
+  DateTime              /// Fala data e hora
+  DBdeltree             /// Remove registros do AstDB
+  DeadAGI               /// Executa AGI após desligamento
+  Dial                  /// Realiza uma chamada
+  Dictate               /// Ditado virtual
+  Directory             /// Diretório de ramais (Voicemail)
+  DISA                  /// Acesso direto ao sistema
+  DumpChan              /// Exibe informações do canal
+  EAGI                  /// AGI com acesso ao áudio
+  Echo                  /// Eco de áudio
+  Else                  /// Bloco ELSE
+  ElseIf                /// Bloco ELSE IF
+  EndIf                 /// Finaliza IF
+  EndWhile              /// Finaliza WHILE
+  Exec                  /// Executa aplicação dinamicamente
+  ExecIf                /// Executa aplicação condicionalmente
+  ExecIfTime            /// Executa aplicação baseado em horário
+  ExitIf                /// Sai de IF
+  ExitWhile             /// Sai de WHILE
+  ExtenSpy              /// Espiona um ramal
+  ExternalIVR           /// Integra IVR externo
+  Festival              /// TTS usando Festival
+  FollowMe              /// Follow Me / Find Me
+  ForkCDR               /// Divide o CDR
+  GetCPEID              /// Obtém ID ADSI
+  Gosub                 /// Chamada de sub-rotina
+  GosubIf               /// Gosub condicional
+  Goto                  /// Salto no dialplan
+  GotoIf                /// Salto condicional
+  GotoIfTime            /// Salto baseado em horário
+  Hangup                /// Encerra a chamada
+  HangupCauseClear      /// Limpa causa de desligamento
+  IAX2Provision         /// Provisionamento IAX
+  If                    /// Início de IF
+  Incomplete            /// Retorno incompleto
+  JabberJoin            /// Entra em sala Jabber
+  JabberLeave           /// Sai de sala Jabber
+  JabberSend            /// Envia mensagem Jabber
+  JabberSendGroup       /// Envia mensagem Jabber para grupo
+  JACK                  /// Integração JACK Audio
+  Log                   /// Escreve log
+  MessageSend           /// Envia mensagem de texto
+  Milliwatt             /// Tom de teste 1004Hz
+  MinivmAccMess         /// Mensagem de conta MiniVoicemail
+  MinivmDelete          /// Remove mensagem MiniVoicemail
+  MinivmGreet           /// Saudação MiniVoicemail
+  MinivmMWI             /// MWI MiniVoicemail
+  MinivmNotify          /// Notificação MiniVoicemail
+  MinivmRecord          /// Grava MiniVoicemail
+  MixMonitor            /// Grava chamada
+  Morsecode             /// Reproduz código Morse
+  MP3Player             /// Reproduz MP3
+  MSet                  /// Define múltiplas variáveis
+  MusicOnHold           /// Música em espera
+  NoOp                  /// Nenhuma operação
+  ODBC_Commit           /// Commit ODBC
+  ODBC_Rollback         /// Rollback ODBC
+  ODBCFinish            /// Finaliza consulta ODBC
+  Originate             /// Origina chamada
+  Page                  /// Paging
+  Park                  /// Estaciona chamada
+  ParkAndAnnounce       /// Estaciona e anuncia
+  ParkedCall            /// Recupera chamada estacionada
+  PauseQueueMember      /// Pausa membro da fila
+  Pickup                /// Captura chamada
+  PickupChan            /// Captura canal específico
+  PJSIPHangup           /// Hangup PJSIP com código SIP
+  PJSIPNotify           /// Envia NOTIFY PJSIP
+  Playback              /// Reproduz áudio
+  PlayTones             /// Reproduz tons
+  PrivacyManager        /// Exige CallerID
+  Proceeding            /// Indica proceeding
+  Progress              /// Indica progresso
+  Queue                 /// Envia chamada para fila
+  QueueLog              /// Escreve no log da fila
+  QueueUpdate           /// Atualiza dados da fila
+  RaiseException        /// Trata exceções
+  Read                  /// Lê entrada do usuário
+  ReadExten             /// Lê extensão digitada
+  ReceiveFAX            /// Recebe fax
+  ReceiveMF             /// Recebe dígitos MF
+  ReceiveSF             /// Recebe dígitos SF
+  ReceiveText           /// Recebe mensagem de texto
+  Record                /// Grava áudio
+  Reload                /// Recarrega módulo
+  RemoveQueueMember     /// Remove membro da fila
+  ResetCDR              /// Reseta CDR
+  RetryDial             /// Tenta chamada novamente
+  Return                /// Retorna de Gosub
+  Ringing               /// Indica toque
+  SayAlpha              /// Fala letras
+  SayAlphaCase          /// Fala letras com caso
+  SayDigits             /// Fala dígitos
+  SayMoney              /// Fala valor monetário
+  SayNumber             /// Fala número
+  SayOrdinal            /// Fala ordinal
+  SayPhonetic           /// Fala fonético
+  SayUnixTime           /// Fala timestamp
+  SendDTMF              /// Envia DTMF
+  SendFAX               /// Envia fax
+  SendMF                /// Envia MF
+  SendSF                /// Envia SF
+  SendText              /// Envia texto
+  Set                   /// Define variável
+  Signal                /// Envia sinal
+  SLAStation            /// Estação SLA
+  SLATrunk              /// Tronco SLA
+  SMS                   /// Envia SMS
+  SoftHangup            /// Hangup suave
+  SpeechActivateGrammar /// Ativa gramática de voz
+  SpeechBackground      /// Reconhecimento de voz em background
+  SpeechCreate          /// Cria estrutura de voz
+  SpeechDeactivateGrammar /// Desativa gramática
+  SpeechDestroy         /// Finaliza reconhecimento
+  SpeechLoadGrammar     /// Carrega gramática
+  SpeechProcessingSound /// Define som de processamento
+  SpeechStart           /// Inicia reconhecimento
+  SpeechUnloadGrammar   /// Remove gramática
+  StackPop              /// Remove da pilha Gosub
+  StartMusicOnHold      /// Inicia MOH
+  Stasis                /// Executa aplicação ARI
+  StopMixMonitor        /// Para gravação
+  StopMusicOnHold       /// Para MOH
+  StopPlayTones         /// Para tons
+  StoreDTMF             /// Armazena DTMF
+  StreamEcho            /// Eco de áudio
+  System                /// Executa comando do sistema
+  TestClient            /// Cliente de teste
+  TestServer            /// Servidor de teste
+  ToneScan              /// Escaneia tons
+  Transfer              /// Transfere chamada
+  TryExec               /// Executa app com retorno
+  TrySystem             /// Executa comando do sistema com fallback
+  UnpauseQueueMember    /// Retoma membro da fila
+  UserEvent             /// Evento customizado (AMI/ARI)
+  Verbose               /// Log verboso
+  VMAuthenticate        /// Autenticação Voicemail
+  VMSayName             /// Fala nome do usuário Voicemail
+  VoiceMail             /// Caixa postal
+  VoiceMailMain         /// Acesso ao Voicemail
+  VoiceMailPlayMsg      /// Reproduz mensagem Voicemail
+  Wait                  /// Aguarda tempo
+  WaitDigit             /// Aguarda dígito
+  WaitExten             /// Aguarda extensão
+  WaitForCondition      /// Aguarda condição
+  WaitForNoise          /// Aguarda ruído
+  WaitForRing           /// Aguarda ring
+  WaitForSignal         /// Aguarda sinal
+  WaitForSilence        /// Aguarda silêncio
+  WaitForTone           /// Aguarda tom
+  WaitUntil             /// Aguarda horário
+  While                 /// Loop while
+  Zapateller            /// Bloqueia telemarketing
 }
