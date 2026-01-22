@@ -171,7 +171,7 @@ model pjsip_pickup_groups {
 model pjsip_pickup_group_members {
   id String @unique @default(uuid()) @db.Uuid
   pickup_group_id String @db.Uuid
-  endpoint_id String @db.Uuid
+  endpoint_id String @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
