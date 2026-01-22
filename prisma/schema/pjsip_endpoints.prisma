@@ -41,10 +41,10 @@ model ps_endpoints {
   use_avpf                           ast_bool_values?
   media_encryption                   pjsip_media_encryption_values?
   inband_progress                    ast_bool_values?
-  call_group                         String?                                     @db.VarChar(40)
-  pickup_group                       String?                                     @db.VarChar(40)
-  named_call_group                   String?                                     @db.VarChar(40)
-  named_pickup_group                 String?                                     @db.VarChar(40)
+  call_group                         String?                                     @db.VarChar(255)
+  pickup_group                       String?                                     @db.VarChar(255)
+  named_call_group                   String?                                     @db.Text
+  named_pickup_group                 String?                                     @db.Text
   device_state_busy_at               Int?
   fax_detect                         ast_bool_values?
   t38_udptl                          ast_bool_values?
@@ -150,8 +150,38 @@ model ps_endpoints {
   aorsRelation  ps_aors?
   registrationRelation ps_registrations?
   queueMembers queue_members[]
+  pickup_group_members pjsip_pickup_group_members[]
 
   @@index([id], map: "ps_endpoints_id")
+}
+
+model pjsip_pickup_groups {
+  id String @unique @default(uuid()) @db.Uuid
+  asterisk_id String @db.VarChar(8) //isso vai para o named_pickup_group e named_call_group (Base62 aleatório)
+  name String @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  members pjsip_pickup_group_members[]
+
+  @@index([id, asterisk_id])
+  @@index([asterisk_id])
+}
+
+model pjsip_pickup_group_members {
+  id String @unique @default(uuid()) @db.Uuid
+  pickup_group_id String @db.Uuid
+  endpoint_id String @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  pickup_group pjsip_pickup_groups @relation(fields: [pickup_group_id], references: [id], onDelete: Cascade)
+  endpoint ps_endpoints @relation(fields: [endpoint_id], references: [id], onDelete: Cascade)
+
+  @@index([id, pickup_group_id])
+  @@index([endpoint_id])
+  @@index([pickup_group_id, endpoint_id])
+  @@index([pickup_group_id])
 }
 
 enum tipo_endpoint_values {
