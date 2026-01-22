@@ -1,3 +1,18 @@
+model dialplan {
+  id String @unique @default(uuid())
+  name String @db.VarChar(255)
+  description String @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  extensions extensions[]
+
+  @@index([name])
+  @@index([description])
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
 model extensions {
   id       BigInt @id @default(autoincrement())
   context  context_values @default(teste)
@@ -5,8 +20,17 @@ model extensions {
   priority Int
   app      app_values
   appdata  String @db.VarChar(256)
+  dialplan_id String @db.VarChar(255)
+
+  dialplan dialplan @relation(fields: [dialplan_id], references: [id], onDelete: Cascade)
 
   @@unique([context, exten, priority])
+
+  @@index([context, exten, priority])
+  @@index([exten])
+  @@index([priority])
+  @@index([app])
+  @@index([appdata])
 }
 
 enum context_values {
