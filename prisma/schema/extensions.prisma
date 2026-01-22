@@ -1,9 +1,9 @@
 model dialplan {
-  id String @unique @default(uuid())
+  id String @unique @default(uuid()) @db.Uuid
   name String @db.VarChar(255)
   description String @db.VarChar(255)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
   
   extensions extensions[]
 
@@ -20,7 +20,7 @@ model extensions {
   priority Int
   app      app_values
   appdata  String @db.VarChar(256)
-  dialplan_id String @db.VarChar(255)
+  dialplan_id String @db.Uuid
 
   dialplan dialplan @relation(fields: [dialplan_id], references: [id], onDelete: Cascade)
 
