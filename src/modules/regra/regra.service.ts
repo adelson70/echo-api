@@ -6,7 +6,7 @@ import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.servi
 export class RegraService {
     constructor(
         private readonly prismaRead: PrismaReadService, 
-        private readonly prismaWrite: PrismaWriteService) 
-    {}
+        private readonly prismaWrite: PrismaWriteService,
+    ) { }
 
 }
