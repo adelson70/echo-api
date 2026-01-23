@@ -3,7 +3,7 @@ import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
 import { CreateLoteRamalDto, CreateRamalDto, FindRamalDto, ListRamalDto, RamalDto, UpdateRamalDto } from "./dto/ramal.dto";
 import { PasswordService } from "src/common/services/password.service";
-import { tipo_endpoint_values } from "@prisma/client";
+import { Prisma, tipo_endpoint_values } from "@prisma/client";
 
 @Injectable()
 export class RamalService {
@@ -78,13 +78,15 @@ export class RamalService {
                 }
             })
 
-            if (!ramalEncontrado) throw new NotFoundException(`Ramal ${ramal} não encontrado`);
-    
             return this.mapRamal(ramalEncontrado);
             
         } catch (error) {
             
             if (error instanceof HttpException) throw error;
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Ramal não encontrado');
+            }
 
             throw new InternalServerErrorException('Erro na busca de ramal');
         }
@@ -92,15 +94,6 @@ export class RamalService {
 
     async create(ramalDto: CreateRamalDto): Promise<CreateRamalDto> {
         try {
-
-            const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
-                where: {
-                    id: ramalDto.ramal
-                }
-            })
-
-            if (ramalExiste) throw new BadRequestException(`Ramal ${ramalDto.ramal} já existe`);
-
             await this.prismaWrite.$transaction(async (tx) => {
                 await tx.ps_endpoints.create({
                     data: {
@@ -138,6 +131,10 @@ export class RamalService {
             
         } catch (error) {
             if (error instanceof HttpException) throw error;
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') throw new BadRequestException('Ramal já existe');
+            }
 
             throw new InternalServerErrorException('Erro na criação de ramal');
         }
@@ -319,14 +316,6 @@ export class RamalService {
 
     async delete(ramal: string): Promise<void> {
         try {
-            const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
-                where: {
-                    id: ramal
-                }
-            })
-
-            if (!ramalExiste) throw new NotFoundException(`Ramal ${ramal} não encontrado`);
-
             await this.prismaWrite.$transaction(async (tx) => {
                 await tx.ps_endpoints.delete({
                     where: {
@@ -337,7 +326,10 @@ export class RamalService {
                         authsRelation: true,
                     }
                 }).catch((error) => {
-                    console.log(error);
+                    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                        if (error.code === 'P2025') throw new NotFoundException('Ramal não encontrado');
+                    }
+
                     throw new InternalServerErrorException('Erro na exclusão de ramal');
                 });
             })

@@ -2,6 +2,7 @@ import { BadRequestException, HttpException, Injectable, InternalServerErrorExce
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
 import { AddPermissaoPerfilDto, CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class PerfilService {
@@ -54,27 +55,21 @@ export class PerfilService {
                 }
             })
 
-            if (!perfilExistente) throw new NotFoundException(`Perfil ${id} não encontrado`);
-
             return this.mapPerfil(perfilExistente);
             
         } catch (error) {
             if (error instanceof HttpException) throw error;
-            console.log(error);
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Perfil não encontrado');
+            }
+
             throw new InternalServerErrorException('Erro ao buscar perfil');
         }
     }
 
     async create(createPerfilDto: CreatePerfilDto): Promise<CreatePerfilDto> {
         try {
-            const perfilExistente = await this.prismaRead.perfil.findUnique({
-                where: {
-                    nome: createPerfilDto.nome,
-                },
-            })
-
-            if (perfilExistente) throw new BadRequestException(`Perfil ${createPerfilDto.nome} já existe`, { cause: 'Perfil já existe' });
-
             const perfilCriado = await this.prismaWrite.perfil.create({
                 data: {
                     nome: createPerfilDto.nome,
@@ -105,21 +100,17 @@ export class PerfilService {
             return this.mapPerfil(perfilCriado);
         } catch (error) {
             if (error instanceof HttpException) throw error;
-            console.log(error);
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') throw new BadRequestException('Perfil já existe');
+            }
+
             throw new InternalServerErrorException('Erro ao criar perfil');
         }
     }
 
     async update(id: string, updatePerfilDto: UpdatePerfilDto): Promise<UpdatePerfilDto> {
         try {
-            const perfilExistente = await this.prismaRead.perfil.findUnique({
-                where: {
-                    id: id,
-                },
-            })
-
-            if (!perfilExistente) throw new NotFoundException(`Perfil ${id} não encontrado`);
-
             const perfilAtualizado = await this.prismaWrite.perfil.update({
                 where: {
                     id: id,
@@ -142,31 +133,30 @@ export class PerfilService {
 
         } catch (error) {
             if (error instanceof HttpException) throw error;
-            console.log(error);
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Perfil não encontrado');
+            }
+
             throw new InternalServerErrorException('Erro ao atualizar perfil');
         }
     }
 
     async delete(id: string): Promise<void> {
         try {
-            const perfilExistente = await this.prismaRead.perfil.findUnique({
-                where: {
-                    id: id,
-                },
-            })
-
-            if (!perfilExistente) throw new NotFoundException(`Perfil ${id} não encontrado`);
-
             await this.prismaWrite.perfil.delete({
                 where: {
                     id: id,
                 },
             })
 
-            return;
         } catch (error) {
             if (error instanceof HttpException) throw error;
-            console.log(error);
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Perfil não encontrado');
+            }
+
             throw new InternalServerErrorException('Erro ao deletar perfil');
         }
     }
@@ -211,12 +201,9 @@ export class PerfilService {
                     })
                 })
             }
-            return;
             
         } catch (error) {
             if (error instanceof HttpException) throw error;
-
-            console.log(error);
 
             throw new InternalServerErrorException('Erro ao adicionar permissão ao perfil');
         }

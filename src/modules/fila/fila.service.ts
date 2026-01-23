@@ -76,14 +76,6 @@ export class FilaService {
 
     async create(createFilaDto: CreateFilaDto): Promise<CreateFilaDto> {
         try {
-            const filaExiste = await this.prismaRead.queues.findFirst({
-                where: {
-                    name: createFilaDto.nome,
-                },
-            });
-            
-            if (filaExiste) throw new BadRequestException(`Fila ${createFilaDto.nome} já existe`);
-
             const fila = await this.prismaWrite.queues.create({
                 data: {
                     name: createFilaDto.nomeIdentificador,
@@ -111,6 +103,12 @@ export class FilaService {
             return this.mapFila(fila);
 
         } catch (error) {
+            if (error instanceof HttpException) throw error;
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') throw new BadRequestException('Fila já existe');
+            }
+
             throw new InternalServerErrorException('Erro ao criar fila');
         }
     }
@@ -122,11 +120,13 @@ export class FilaService {
                     id: filaId,
                 }
             });
-
-            return;
         }
         catch (error) {
             if (error instanceof HttpException) throw error;
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Fila não encontrada');
+            }
 
             throw new InternalServerErrorException('Erro ao deletar fila');
         }
@@ -135,22 +135,6 @@ export class FilaService {
     async update(filaId: string, updateFilaDto: UpdateFilaDto): Promise<UpdateFilaDto> {
         try {
             if (Object.keys(updateFilaDto).length === 0) throw new BadRequestException('Nenhum dado para atualizar');
-
-            const filaExiste = await this.prismaRead.queues.findFirst({
-                where: {
-                    id: filaId,
-                },
-            });
-
-            if (!filaExiste) throw new NotFoundException('Fila não encontrada');
-
-            // const data = {
-            //     displayname: updateFilaDto.nome || filaExiste.displayname,
-            //     strategy: updateFilaDto.estrategia || filaExiste.strategy,
-            //     timeout: updateFilaDto.tempoEspera || filaExiste.timeout,
-            //     retry: updateFilaDto.tentativas || filaExiste.retry,
-            //     musiconhold: updateFilaDto.musicaDeEspera || filaExiste.musiconhold,
-            // }
 
             const filaAtualizada = await this.prismaWrite.queues.update({
                 where: { id: filaId },
@@ -161,6 +145,10 @@ export class FilaService {
             
         } catch (error) {
             if (error instanceof HttpException) throw error;
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Fila não encontrada');
+            }
 
             throw new InternalServerErrorException('Erro ao atualizar fila');
         }

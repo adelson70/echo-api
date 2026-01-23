@@ -1,8 +1,8 @@
-import { HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { PrismaReadService } from "src/infra/database/prisma/prisma-read.service";
 import { PrismaWriteService } from "src/infra/database/prisma/prisma-write.service";
 import { CreateTroncoDto, FindTroncoDto, ListTroncoDto, TroncoDto, UpdateTroncoDto } from "./dto/tronco.dto";
-import { ast_bool_values, pjsip_auth_type_values_v2, ps_auths, ps_endpoints, ps_registrations, tipo_endpoint_values } from "@prisma/client";
+import { ast_bool_values, pjsip_auth_type_values_v2, Prisma, ps_auths, ps_endpoints, ps_registrations, tipo_endpoint_values } from "@prisma/client";
 import { SshService } from "src/infra/ssh/ssh.service";
 
 @Injectable()
@@ -67,12 +67,14 @@ export class TroncoService {
                 }
             })
 
-            if (!tronco) throw new NotFoundException('Tronco não encontrado');
-
             return this.mapTronco(tronco);
         } catch (error) {
             if (error instanceof HttpException) throw error;
-            console.error(error);
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Tronco não encontrado');
+            }
+
             throw new InternalServerErrorException('Erro na busca de tronco');
         }
     }
@@ -137,7 +139,11 @@ export class TroncoService {
             return this.mapTronco(tronco);
         } catch (error) {
             if (error instanceof HttpException) throw error;
-            console.error(error);
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') throw new BadRequestException('Tronco já existe');
+            }
+
             throw new InternalServerErrorException('Erro na criação de tronco');
         }
     }
@@ -204,7 +210,11 @@ export class TroncoService {
             return this.mapTronco(tronco);
         } catch (error) {
             if (error instanceof HttpException) throw error;
-            console.error(error);
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Tronco não encontrado');
+            }
+
             throw new InternalServerErrorException('Erro na atualização de tronco');
         }
     }
@@ -213,14 +223,6 @@ export class TroncoService {
         try {
             await this.deleteTronco(troncoId);
 
-            const tronco = await this.prismaRead.ps_endpoints.findUnique({
-                where: {
-                    id: troncoId,
-                },
-            })
-
-            if (!tronco) throw new NotFoundException('Tronco não encontrado');
-
             await this.prismaWrite.ps_endpoints.delete({
                 where: {
                     id: troncoId,
@@ -228,7 +230,11 @@ export class TroncoService {
             })
         } catch (error) {
             if (error instanceof HttpException) throw error;
-            console.error(error);
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Tronco não encontrado');
+            }
+
             throw new InternalServerErrorException('Erro na exclusão de tronco');
         }
     }
