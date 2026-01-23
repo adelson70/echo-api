@@ -150,38 +150,9 @@ model ps_endpoints {
   aorsRelation  ps_aors?
   registrationRelation ps_registrations?
   queueMembers queue_members[]
-  pickup_group_members pjsip_pickup_group_members[]
+  pickup_group_members ps_pickup_group_members[]
 
   @@index([id], map: "ps_endpoints_id")
-}
-
-model pjsip_pickup_groups {
-  id String @unique @default(uuid()) @db.Uuid
-  asterisk_id String @db.VarChar(8) //isso vai para o named_pickup_group e named_call_group (Base62 aleatório)
-  name String @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  members pjsip_pickup_group_members[]
-
-  @@index([id, asterisk_id])
-  @@index([asterisk_id])
-}
-
-model pjsip_pickup_group_members {
-  id String @unique @default(uuid()) @db.Uuid
-  pickup_group_id String @db.Uuid
-  endpoint_id String @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  pickup_group pjsip_pickup_groups @relation(fields: [pickup_group_id], references: [id], onDelete: Cascade)
-  endpoint ps_endpoints @relation(fields: [endpoint_id], references: [id], onDelete: Cascade)
-
-  @@index([id, pickup_group_id])
-  @@index([endpoint_id])
-  @@index([pickup_group_id, endpoint_id])
-  @@index([pickup_group_id])
 }
 
 enum tipo_endpoint_values {
