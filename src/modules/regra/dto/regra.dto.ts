@@ -1,6 +1,7 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
-import { context_values, app_values, extensions } from "@prisma/client";
+import { Equals, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
+import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger";
+import { context_values, app_values, extensions, $Enums } from "@prisma/client";
+import { Type } from "class-transformer";
 
 export class RegraCompletoDto {
     @IsUUID()
@@ -32,6 +33,7 @@ export class RegraCompletoDto {
     })
     tipo: context_values;
 
+    @IsArray()
     @ApiProperty({
         description: 'Regras da regra',
         example: [
@@ -51,7 +53,7 @@ export class RegraCompletoDto {
             },
         ],
     })
-    regra: RegraDto[];
+    regra: RegraDto;
 }
 
 export class RegraDto {
@@ -90,4 +92,44 @@ export class RegraDto {
         example: 'PJSIP/1001',
     })
     parametros: string;
+}
+
+export class ListRegraDto extends RegraCompletoDto {}
+export class FindRegraDto extends RegraCompletoDto {}
+export class RegraDtoSemId extends OmitType(RegraDto, ['id'] as const) {}
+
+export class CreateRegraDto extends PartialType(
+    OmitType(RegraCompletoDto, ['id', 'regra'] as const)
+) {
+    @IsNotEmpty()
+    declare nome: string;
+
+    @IsOptional()
+    declare descricao: string;
+
+    @IsEnum(context_values)
+    @IsNotEmpty()
+    declare tipo: context_values;
+
+    @IsNotEmpty()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => RegraDtoSemId)
+    regra: RegraDtoSemId[];
+}
+
+export class UpdateRegraDto extends PartialType(
+    OmitType(CreateRegraDto, ['tipo'] as const)
+) {
+    @IsOptional()
+    declare nome: string;
+
+    @IsOptional()
+    declare descricao: string;
+
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => RegraDto)
+    regra: RegraDto[];
 }

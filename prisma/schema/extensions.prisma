@@ -1,7 +1,7 @@
 model dialplan {
   id String @unique @default(uuid()) @db.Uuid
-  name String @db.VarChar(255)
-  description String @db.VarChar(255)
+  name String? @db.VarChar(255)
+  description String? @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   
