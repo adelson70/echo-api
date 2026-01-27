@@ -63,11 +63,25 @@ export class RegraService {
                 }
             })
             if (!regra) throw new NotFoundException('Regra não encontrada');
-            
+
             return this.mapRegra(regra);
         } catch (error) {
             if (error instanceof HttpException) throw error;
             throw new InternalServerErrorException('Erro ao buscar regra');
+        }
+    }
+
+    async delete(id: string): Promise<void> {
+        try {
+            await this.prismaWrite.dialplan.delete({
+                where: { id },
+            })
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') throw new NotFoundException('Regra não encontrada');
+            }
+            throw new InternalServerErrorException('Erro ao deletar regra');
         }
     }
 

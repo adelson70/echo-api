@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Query } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RegraService } from "./regra.service";
 import { ListRegraDto, RegraCompletoDto } from "./dto/regra.dto";
@@ -32,5 +32,14 @@ export class RegraController {
     })
     async find(@Param('id') id: string): Promise<RegraCompletoDto> {
         return await this.regraService.find(id);
+    }
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Deletar uma regra' })
+    @ApiResponse({ status: 200, description: 'Regra deletada com sucesso' })
+    @ApiResponse({ status: 404, description: 'Regra não encontrada' })
+    @ApiResponse({ status: 500, description: 'Erro ao deletar regra' })
+    async delete(@Param('id') id: string): Promise<void> {
+        return await this.regraService.delete(id);
     }
 }
