@@ -53,7 +53,7 @@ export class RegraCompletoDto {
             },
         ],
     })
-    regra: RegraDto;
+    regra: RegraDto[];
 }
 
 export class RegraDto {

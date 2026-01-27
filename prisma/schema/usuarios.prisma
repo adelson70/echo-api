@@ -1,8 +1,6 @@
 enum Modulos {
     RAMAL
-    REGRA_DE_SAIDA
-    REGRA_DE_ENTRADA
-    REGRA_GERAL
+    REGRA
     TRONCO
     FILA
     GRUPO_DE_CAPTURA

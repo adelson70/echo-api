@@ -145,18 +145,8 @@ import {
         '/usuario': Modulos.USUARIO,
         '/relatorio': Modulos.RELATORIO,
         '/sistema': Modulos.SISTEMA,
+        '/regra': Modulos.REGRA,
       };
-  
-      // Verifica rotas de regra (ordem importa: específicas primeiro, depois geral)
-      if (cleanPath.startsWith('/regra/entrada')) {
-        return Modulos.REGRA_DE_ENTRADA;
-      }
-      if (cleanPath.startsWith('/regra/saida')) {
-        return Modulos.REGRA_DE_SAIDA;
-      }
-      if (cleanPath.startsWith('/regra')) {
-        return Modulos.REGRA_GERAL;
-      }
   
       // Busca correspondência exata primeiro
       for (const [route, modulo] of Object.entries(routeMap)) {

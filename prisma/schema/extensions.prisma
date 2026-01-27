@@ -2,6 +2,7 @@ model dialplan {
   id String @unique @default(uuid()) @db.Uuid
   name String? @db.VarChar(255)
   description String? @db.VarChar(255)
+  type context_values @default(teste)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   
@@ -9,6 +10,7 @@ model dialplan {
 
   @@index([name])
   @@index([description])
+  @@index([type])
   @@index([createdAt])
   @@index([updatedAt])
 }
