@@ -111,6 +111,29 @@ export class CreateRegraDto extends PartialType(
     @IsNotEmpty()
     declare tipo: context_values;
 
+    @ApiProperty({
+        description: 'Regras da regra',
+        example: [
+            {
+                rota: '100',
+                prioridade: 1,
+                acao: app_values.Answer,
+                parametros: '',
+            },
+            {
+                rota: '100',
+                prioridade: 2,
+                acao: app_values.Playback,
+                parametros: 'demo-congrats',
+            },
+            {
+                rota: '100',
+                prioridade: 3,
+                acao: app_values.Hangup,
+                parametros: '',
+            }
+        ],
+    })
     @IsNotEmpty()
     @IsArray()
     @ValidateNested({ each: true })

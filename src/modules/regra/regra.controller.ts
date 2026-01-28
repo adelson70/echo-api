@@ -1,7 +1,7 @@
-import { Controller, Delete, Get, Param, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RegraService } from "./regra.service";
-import { ListRegraDto, RegraCompletoDto } from "./dto/regra.dto";
+import { CreateRegraDto, ListRegraDto, RegraCompletoDto } from "./dto/regra.dto";
 import { context_values } from "@prisma/client";
 
 @ApiTags('Regra')
@@ -32,6 +32,19 @@ export class RegraController {
     })
     async find(@Param('id') id: string): Promise<RegraCompletoDto> {
         return await this.regraService.find(id);
+    }
+
+    @Post('create')
+    @ApiOperation({ summary: 'Criar uma nova regra' })
+    @ApiResponse({
+        status: 201,
+        description: 'Regra criada com sucesso',
+        type: ListRegraDto,
+    })
+    async create(
+        @Body() data: CreateRegraDto
+    ): Promise<ListRegraDto> {
+        return await this.regraService.create(data);
     }
 
     @Delete(':id')
