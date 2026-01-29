@@ -74,6 +74,7 @@ function mapRouteToModule(path: string): Modulos | null {
     '/regra': Modulos.REGRA,
     '/auth': Modulos.AUTH,
     '/log': Modulos.LOG,
+    '/perfil': Modulos.PERFIL,
   };
 
   // Busca correspondência exata primeiro

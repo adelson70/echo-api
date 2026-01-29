@@ -9,6 +9,7 @@ enum Modulos {
     SISTEMA
     AUTH
     LOG
+    PERFIL
 }
 
 enum LogActions {
