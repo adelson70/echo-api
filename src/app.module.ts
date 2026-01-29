@@ -18,6 +18,7 @@ import { SistemaModule } from './modules/sistema/sistema.module';
 import { LogModule } from './modules/log/log.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PerfilModule } from './modules/perfil/perfil.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { Reflector } from '@nestjs/core';
 import { AmiModule } from './modules/ami/ami.module';
 import { SshModule } from './infra/ssh/ssh.module';
@@ -42,6 +43,8 @@ import { SshModule } from './infra/ssh/ssh.module';
     PerfilModule,
     AmiModule,
     SshModule,
+    DashboardModule,
+  
   ],
   controllers: [AppController],
   providers: [
