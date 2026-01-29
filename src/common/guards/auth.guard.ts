@@ -10,6 +10,7 @@ import { LogService } from 'src/modules/log/log.service';
 import { LogActions, LogStatus, Modulos } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { UsuarioPayload } from '../decorators/usuario.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -58,14 +59,14 @@ export class AuthGuard implements CanActivate {
 				perfil_id: string;
 			};
 			
-			// Access token válido - popula request.user e permite continuar
+			// popula o request.usuario
 			(request as any).usuario = {
 				id: payload.id,
 				email: payload.email,
 				nome: payload.nome,
 				is_admin: payload.is_admin,
 				perfil_id: payload.perfil_id,
-			};
+			} as UsuarioPayload;
 			
 			return true;
 		} catch (error) {

@@ -12,7 +12,6 @@ import { z } from 'zod';
 import basicAuth from 'express-basic-auth';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import { JwtService } from '@nestjs/jwt';
 import { PermissaoGuard } from './common/guards/permissao.guard';
 import { PrismaReadService } from './infra/database/prisma/prisma-read.service';
 

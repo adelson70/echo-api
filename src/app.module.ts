@@ -51,11 +51,11 @@ import { SshModule } from './infra/ssh/ssh.module';
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: AuditLogInterceptor,
+      useClass: ResponseInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: ResponseInterceptor,
+      useClass: AuditLogInterceptor,
     },
     Reflector,
   ],
