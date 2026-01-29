@@ -77,27 +77,31 @@ export class UsuarioService {
         } catch (error) {
             if (error instanceof HttpException) throw error;
 
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
+            }
+
             throw new InternalServerErrorException('Erro ao buscar usuário pelo id');
         }
     }
 
-    async create(createUsuarioDto: CreateUsuarioDto, usuario: UsuarioPayload): Promise<CreateUsuarioDto> {
+    async create(dto: CreateUsuarioDto, usuario: UsuarioPayload): Promise<CreateUsuarioDto> {
         try {
-            const usuarioEncontrado = await this.prismaRead.usuario.findUnique({ where: { email: createUsuarioDto.email } });
+            const usuarioEncontrado = await this.prismaRead.usuario.findUnique({ where: { email: dto.email } });
 
             if (usuarioEncontrado) throw new BadRequestException('Usuário já existe');
 
-            if (!usuario.is_admin && createUsuarioDto.is_admin) throw new ForbiddenException('Você não tem permissão para criar um usuário administrador');
+            if (!usuario.is_admin && dto.is_admin) throw new ForbiddenException('Você não tem permissão para criar um usuário administrador');
 
-            if (createUsuarioDto.perfil_id) {
-                const perfil = await this.prismaRead.perfil.findUnique({ where: { id: createUsuarioDto.perfil_id } });
+            if (dto.perfil_id) {
+                const perfil = await this.prismaRead.perfil.findUnique({ where: { id: dto.perfil_id } });
              
                 if (!perfil) throw new BadRequestException('Perfil não encontrado');
             }
 
-            createUsuarioDto.senha = await this.passwordService.generateHash(createUsuarioDto.senha);
+            dto.senha = await this.passwordService.generateHash(dto.senha);
 
-            const usuarioCriado = await this.prismaWrite.usuario.create({ data: createUsuarioDto });
+            const usuarioCriado = await this.prismaWrite.usuario.create({ data: dto });
 
             return usuarioCriado as CreateUsuarioDto;
             
@@ -108,25 +112,29 @@ export class UsuarioService {
         }
     }
 
-    async update(id: string, updateUsuarioDto: UpdateUsuarioDto, usuario: UsuarioPayload): Promise<UpdateUsuarioDto> {
+    async update(id: string, dto: UpdateUsuarioDto, usuario: UsuarioPayload): Promise<UpdateUsuarioDto> {
         try {
             const usuarioEncontrado = await this.prismaRead.usuario.findUnique({ where: { id } });
 
             if (!usuarioEncontrado) throw new NotFoundException('Usuário não encontrado');
 
-            if (!usuario.is_admin && updateUsuarioDto.is_admin) throw new ForbiddenException('Você não tem permissão para trocar o status de administrador do usuário');
+            if (!usuario.is_admin && dto.is_admin) throw new ForbiddenException('Você não tem permissão para trocar o status de administrador do usuário');
 
-            if (updateUsuarioDto.perfil_id) {
-                const perfil = await this.prismaRead.perfil.findUnique({ where: { id: updateUsuarioDto.perfil_id } });
+            if (dto.perfil_id) {
+                const perfil = await this.prismaRead.perfil.findUnique({ where: { id: dto.perfil_id } });
 
                 if (!perfil) throw new BadRequestException('Perfil não encontrado');
             }
 
-            const usuarioAtualizado = await this.prismaWrite.usuario.update({ where: { id }, data: updateUsuarioDto });
+            const usuarioAtualizado = await this.prismaWrite.usuario.update({ where: { id }, data: dto });
 
             return usuarioAtualizado as UpdateUsuarioDto;
         } catch (error) {
             if (error instanceof HttpException) throw error;
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
+            }
 
             throw new InternalServerErrorException('Erro ao atualizar usuário');
         }
@@ -145,26 +153,28 @@ export class UsuarioService {
         catch (error) {
             if (error instanceof HttpException) throw error;
 
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
+            }
+
             throw new InternalServerErrorException('Erro ao deletar usuário');
         }
     }
 
-    async togglePermissao(addPermissaoDto: AddPermissaoUsuarioDto): Promise<void> {
+    async togglePermissao(dto: AddPermissaoUsuarioDto): Promise<void> {
         try {
-            // console.log(addPermissaoDto);
+            const permissoesExistentes = await this.prismaRead.permissaoUsuario.findMany({ where: { usuario_id: dto.usuario_id }, select: { modulo: true } });
 
-            const permissoesExistentes = await this.prismaRead.permissaoUsuario.findMany({ where: { usuario_id: addPermissaoDto.usuario_id }, select: { modulo: true } });
+            const permissoesParaAtualizar = dto.permissoes.filter(permissao => permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
 
-            const permissoesParaAtualizar = addPermissaoDto.permissoes.filter(permissao => permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
-
-            const permissoesParaCriar = addPermissaoDto.permissoes.filter(permissao => !permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
+            const permissoesParaCriar = dto.permissoes.filter(permissao => !permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
 
             // SE EXISTEM PERMISSÕES, ATUALIZA AS PERMISSÕES
             if (permissoesParaAtualizar.length > 0 ) {
                 await this.prismaWrite.$transaction(
                     permissoesParaAtualizar.map(permissao => 
                         this.prismaWrite.permissaoUsuario.updateMany({
-                            where: { modulo: permissao.modulo, usuario_id: addPermissaoDto.usuario_id },
+                            where: { modulo: permissao.modulo, usuario_id: dto.usuario_id },
                             data: {
                                 criar: permissao.criar,
                                 ler: permissao.ler,
@@ -181,7 +191,7 @@ export class UsuarioService {
                 await this.prismaWrite.$transaction(async (tx) => {
                     await tx.permissaoUsuario.createMany({
                         data: permissoesParaCriar.map(permissao => ({
-                            usuario_id: addPermissaoDto.usuario_id,
+                            usuario_id: dto.usuario_id,
                             modulo: permissao.modulo,
                             criar: permissao.criar,
                             ler: permissao.ler,

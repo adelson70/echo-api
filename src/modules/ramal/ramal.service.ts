@@ -92,34 +92,34 @@ export class RamalService {
         }
     }
 
-    async create(ramalDto: CreateRamalDto): Promise<CreateRamalDto> {
+    async create(dto: CreateRamalDto): Promise<CreateRamalDto> {
         try {
             await this.prismaWrite.$transaction(async (tx) => {
                 await tx.ps_endpoints.create({
                     data: {
-                        id: ramalDto.ramal,
-                        displayname: ramalDto.nome || ramalDto.ramal,
-                        context: ramalDto.regraSaida,
-                        set_var: `dod=${ramalDto.dod}`,
+                        id: dto.ramal,
+                        displayname: dto.nome || dto.ramal,
+                        context: dto.regraSaida,
+                        set_var: `dod=${dto.dod}`,
                         transport: process.env.TRANSPORT,
-                        aors: ramalDto.ramal,
-                        auth: ramalDto.ramal,
+                        aors: dto.ramal,
+                        auth: dto.ramal,
                         disallow: 'all',
                         allow: 'ulaw,alaw',
-                        callerid: ramalDto.ramal,
+                        callerid: dto.ramal,
                         direct_media: 'no',
                         force_rport: 'yes',
                         rtp_symmetric: 'yes',
                         tipo_endpoint: tipo_endpoint_values.ramal,
                         aorsRelation: {
                             create: {
-                                max_contacts: ramalDto.maximoContatos
+                                max_contacts: dto.maximoContatos
                             }
                         },
                         authsRelation: {
                             create: {
-                                username: ramalDto.ramal,
-                                password: ramalDto.senha, 
+                                username: dto.ramal,
+                                password: dto.senha, 
                                 auth_type: 'userpass'
                             }
                         }
@@ -139,13 +139,13 @@ export class RamalService {
             throw new InternalServerErrorException('Erro na criação de ramal');
         }
 
-        return ramalDto
+        return dto
     }
 
     // RAMAIS QUE EXISTEM SERAO IGNORADOS
-    async createLote(loteRamalDto: CreateLoteRamalDto): Promise<ListRamalDto[]> {
+    async createLote(dto: CreateLoteRamalDto): Promise<ListRamalDto[]> {
         try {
-            const { ramalInicial, quantidadeRamais } = loteRamalDto;
+            const { ramalInicial, quantidadeRamais } = dto;
             const data: { ramaisNovos: string[], ramaisExistentes: string[] } = {
                 ramaisNovos: [],
                 ramaisExistentes: [],
@@ -175,8 +175,8 @@ export class RamalService {
                             data: {
                                 id: ramal,
                                 displayname: ramal,
-                                context: loteRamalDto.regraSaida,
-                                set_var: loteRamalDto.dod ? `dod=${loteRamalDto.dod}` : '',
+                                context: dto.regraSaida,
+                                set_var: dto.dod ? `dod=${dto.dod}` : '',
                                 transport: process.env.TRANSPORT,
                                 aors: ramal,
                                 auth: ramal,
@@ -188,7 +188,7 @@ export class RamalService {
                                 rtp_symmetric: 'yes',
                                 aorsRelation: {
                                     create: {
-                                        max_contacts: loteRamalDto.maximoContatos
+                                        max_contacts: dto.maximoContatos
                                     }
                                 },
                                 authsRelation: {
@@ -228,9 +228,9 @@ export class RamalService {
         }
     }
 
-    async update(ramal: string, ramalDto: UpdateRamalDto): Promise<UpdateRamalDto> {
+    async update(ramal: string, dto: UpdateRamalDto): Promise<UpdateRamalDto> {
         try {
-            if (Object.keys(ramalDto).length === 0) throw new BadRequestException('Nenhum dado para atualizar');
+            if (Object.keys(dto).length === 0) throw new BadRequestException('Nenhum dado para atualizar');
             
             const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
                 where: { id: ramal },
@@ -256,17 +256,17 @@ export class RamalService {
             
             let setVar = ramalExiste.set_var || '';
             if (setVar?.includes('dod=')) {
-                setVar = setVar.replace(`dod=${this.getDod(setVar)}`, `dod=${ramalDto.dod}`);
+                setVar = setVar.replace(`dod=${this.getDod(setVar)}`, `dod=${dto.dod}`);
             }
 
             const data = {
                 set_var: setVar,
-                context: ramalDto.regraSaida || ramalExiste.context,
+                context: dto.regraSaida || ramalExiste.context,
                 authsRelation: {
-                    password: ramalDto.senha || ramalExiste.authsRelation!.password,
+                    password: dto.senha || ramalExiste.authsRelation!.password,
                 },
                 aorsRelation: {
-                    max_contacts: ramalDto.maximoContatos || ramalExiste.aorsRelation!.max_contacts,
+                    max_contacts: dto.maximoContatos || ramalExiste.aorsRelation!.max_contacts,
                 },
             }
 

@@ -61,6 +61,7 @@ export class PerfilService {
             if (error instanceof HttpException) throw error;
 
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
                 if (error.code === 'P2025') throw new NotFoundException('Perfil não encontrado');
             }
 
@@ -68,14 +69,14 @@ export class PerfilService {
         }
     }
 
-    async create(createPerfilDto: CreatePerfilDto): Promise<CreatePerfilDto> {
+    async create(dto: CreatePerfilDto): Promise<CreatePerfilDto> {
         try {
             const perfilCriado = await this.prismaWrite.perfil.create({
                 data: {
-                    nome: createPerfilDto.nome,
-                    descricao: createPerfilDto.descricao || '',
+                    nome: dto.nome,
+                    descricao: dto.descricao || '',
                     permissoes: {
-                        create: createPerfilDto.permissoes.map(permissao => ({
+                        create: dto.permissoes.map(permissao => ({
                             modulo: permissao.modulo,
                             criar: permissao.criar,
                             ler: permissao.ler,
@@ -109,13 +110,13 @@ export class PerfilService {
         }
     }
 
-    async update(id: string, updatePerfilDto: UpdatePerfilDto): Promise<UpdatePerfilDto> {
+    async update(id: string, dto: UpdatePerfilDto): Promise<UpdatePerfilDto> {
         try {
             const perfilAtualizado = await this.prismaWrite.perfil.update({
                 where: {
                     id: id,
                 },
-                data: updatePerfilDto,
+                data: dto,
                 select: {
                     id: true,
                     nome: true,
@@ -135,6 +136,7 @@ export class PerfilService {
             if (error instanceof HttpException) throw error;
 
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
                 if (error.code === 'P2025') throw new NotFoundException('Perfil não encontrado');
             }
 
@@ -154,6 +156,7 @@ export class PerfilService {
             if (error instanceof HttpException) throw error;
 
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
                 if (error.code === 'P2025') throw new NotFoundException('Perfil não encontrado');
             }
 
@@ -161,20 +164,20 @@ export class PerfilService {
         }
     }
 
-    async togglePermissao(addPermissaoDto: AddPermissaoPerfilDto): Promise<void> {
+    async togglePermissao(dto: AddPermissaoPerfilDto): Promise<void> {
         try {
-            const permissoesExistentes = await this.prismaRead.permissaoPerfil.findMany({ where: { perfil_id: addPermissaoDto.perfil_id }, select: { modulo: true } });
+            const permissoesExistentes = await this.prismaRead.permissaoPerfil.findMany({ where: { perfil_id: dto.perfil_id }, select: { modulo: true } });
 
-            const permissoesParaAtualizar = addPermissaoDto.permissoes.filter(permissao => permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
+            const permissoesParaAtualizar = dto.permissoes.filter(permissao => permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
 
-            const permissoesParaCriar = addPermissaoDto.permissoes.filter(permissao => !permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
+            const permissoesParaCriar = dto.permissoes.filter(permissao => !permissoesExistentes.some(permissaoExistente => permissaoExistente.modulo === permissao.modulo));
 
             // SE EXISTEM PERMISSÕES, ATUALIZA AS PERMISSÕES
             if (permissoesParaAtualizar.length > 0 ) {
                 await this.prismaWrite.$transaction(
                     permissoesParaAtualizar.map(permissao => 
                         this.prismaWrite.permissaoPerfil.updateMany({
-                            where: { modulo: permissao.modulo, perfil_id: addPermissaoDto.perfil_id },
+                            where: { modulo: permissao.modulo, perfil_id: dto.perfil_id },
                             data: {
                                 criar: permissao.criar,
                                 ler: permissao.ler,
@@ -191,7 +194,7 @@ export class PerfilService {
                 await this.prismaWrite.$transaction(async (tx) => {
                     await tx.permissaoPerfil.createMany({
                         data: permissoesParaCriar.map(permissao => ({
-                            perfil_id: addPermissaoDto.perfil_id,
+                            perfil_id: dto.perfil_id,
                             modulo: permissao.modulo,
                             criar: permissao.criar,
                             ler: permissao.ler,

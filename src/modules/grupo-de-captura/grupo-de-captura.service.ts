@@ -52,27 +52,30 @@ export class GrupoDeCapturaService {
             
         } catch (error) {
             if (error instanceof HttpException) throw error;
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
+            }
             throw new InternalServerErrorException('Erro ao buscar grupo de captura');
         }
     }
 
-    async create(grupoDeCapturaDto: CreateGrupoDeCapturaDto): Promise<CreateGrupoDeCapturaDto> {
+    async create(dto: CreateGrupoDeCapturaDto): Promise<CreateGrupoDeCapturaDto> {
         try {
 
             const grupoDeCaptura = await this.prismaWrite.ps_pickup_groups.create({
                 data: {
-                    name: grupoDeCapturaDto.nome,
+                    name: dto.nome,
                     asterisk_id: this.generateAsteriskId(),
                 },
             });
 
-            if (grupoDeCapturaDto.membros.length === 0) return this.mapGrupoDeCaptura(grupoDeCaptura);
+            if (dto.membros.length === 0) return this.mapGrupoDeCaptura(grupoDeCaptura);
 
             await this.prismaWrite.$transaction(async (tx) => {
                 const endpointsValidos = await tx.ps_endpoints.findMany({
                     where: {
                       id: {
-                        in: grupoDeCapturaDto.membros,
+                        in: dto.membros,
                       },
                     },
                     select: {
@@ -148,12 +151,12 @@ export class GrupoDeCapturaService {
         }
     }
 
-    async update(id: string, grupoDeCapturaDto: UpdateGrupoDeCapturaDto): Promise<UpdateGrupoDeCapturaDto> {
+    async update(id: string, dto: UpdateGrupoDeCapturaDto): Promise<UpdateGrupoDeCapturaDto> {
         try {
             const grupoDeCapturaAtualizado = await this.prismaWrite.ps_pickup_groups.update({
                 where: { id },
                 data: {
-                    name: grupoDeCapturaDto.nome,
+                    name: dto.nome,
                 },
                 select: {
                     id: true,
@@ -171,6 +174,7 @@ export class GrupoDeCapturaService {
             if (error instanceof HttpException) throw error;
             
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
                 if (error.code === 'P2025') throw new NotFoundException('Grupo de captura não encontrado');
             }
 
@@ -219,6 +223,7 @@ export class GrupoDeCapturaService {
             if (error instanceof HttpException) throw error;
 
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
                 if (error.code === 'P2025') throw new NotFoundException('Grupo de captura não encontrado');
             }
 

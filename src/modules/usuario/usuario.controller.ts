@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UsuarioService } from "./usuario.service";
 import { AddPermissaoUsuarioDto, CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto, UpdateUsuarioDto } from "./dto/usuario.dto";
@@ -31,7 +31,7 @@ export class UsuarioController {
         type: FindUsuarioDto,
     })
     async find(
-        @Param('id') id: string,
+        @Param('id', new ParseUUIDPipe()) id: string,
         @Usuario() usuario: UsuarioPayload,
     ): Promise<FindUsuarioDto> {
         return await this.usuarioService.find(id, usuario);
@@ -45,10 +45,10 @@ export class UsuarioController {
         type: CreateUsuarioDto,
     })
     async create(
-        @Body() createUsuarioDto: CreateUsuarioDto,
+        @Body() dto: CreateUsuarioDto,
         @Usuario() usuario: UsuarioPayload,
     ): Promise<CreateUsuarioDto> {
-        return await this.usuarioService.create(createUsuarioDto, usuario);
+        return await this.usuarioService.create(dto, usuario);
     }
 
     @Put(':id')
@@ -59,10 +59,10 @@ export class UsuarioController {
         type: UpdateUsuarioDto,
     })
     async update(
-        @Param('id') id: string, 
-        @Body() updateUsuarioDto: UpdateUsuarioDto, 
+        @Param('id', new ParseUUIDPipe()) id: string, 
+        @Body() dto: UpdateUsuarioDto, 
         @Usuario() usuario: UsuarioPayload): Promise<UpdateUsuarioDto> {
-        return await this.usuarioService.update(id, updateUsuarioDto, usuario);
+        return await this.usuarioService.update(id, dto, usuario);
     }
 
     @Delete(':id')
@@ -72,7 +72,7 @@ export class UsuarioController {
         description: 'Usuário deletado com sucesso',
     })
     async delete(
-        @Param('id') id: string, 
+        @Param('id', new ParseUUIDPipe()) id: string, 
         @Usuario() usuario: UsuarioPayload): Promise<void> {
         return await this.usuarioService.delete(id, usuario);
     }
@@ -89,8 +89,9 @@ export class UsuarioController {
         example: [{ modulo: Modulos.USUARIO, criar: true, ler: true, editar: true, deletar: true }],
     })
     async addPermissao(
-        @Body() addPermissaoDto: AddPermissaoUsuarioDto): Promise<void> {
-        return await this.usuarioService.togglePermissao(addPermissaoDto);
+        @Body() dto: AddPermissaoUsuarioDto
+    ): Promise<void> {
+        return await this.usuarioService.togglePermissao(dto);
     }
 
 }

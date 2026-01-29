@@ -46,11 +46,11 @@ export class TroncoService {
         }
     }
 
-    async find(troncoId: string): Promise<FindTroncoDto> {
+    async find(id: string): Promise<FindTroncoDto> {
         try {
             const tronco = await this.prismaRead.ps_endpoints.findUnique({
                 where: {
-                    id: troncoId,
+                    id,
                 },
                 select: {
                     registrationRelation: {
@@ -79,14 +79,14 @@ export class TroncoService {
         }
     }
 
-    async create(troncoDto: CreateTroncoDto): Promise<CreateTroncoDto> {
+    async create(dto: CreateTroncoDto): Promise<CreateTroncoDto> {
         try {
             const tronco = await this.prismaWrite.ps_endpoints.create({
                 data: {
-                    id: troncoDto.username,
+                    id: dto.username,
                     transport: process.env.TRANSPORT,
-                    aors: troncoDto.username,
-                    auth: troncoDto.username,
+                    aors: dto.username,
+                    auth: dto.username,
                     context: 'from-trunk',
                     disallow: 'all',
                     allow: 'ulaw,alaw',
@@ -97,8 +97,8 @@ export class TroncoService {
                     authsRelation: {
                         create: {
                             auth_type: pjsip_auth_type_values_v2.userpass,
-                            username: troncoDto.username,
-                            password: troncoDto.password,
+                            username: dto.username,
+                            password: dto.password,
                         }
                     },
                     aorsRelation: {
@@ -110,8 +110,8 @@ export class TroncoService {
                     registrationRelation: {
                         create: {
                             transport: process.env.TRANSPORT,
-                            server_uri: this.generateServerUri(troncoDto.provedorHost),
-                            client_uri: this.generateClientUri(troncoDto.username, troncoDto.provedorHost),
+                            server_uri: this.generateServerUri(dto.provedorHost),
+                            client_uri: this.generateClientUri(dto.username, dto.provedorHost),
                             retry_interval: 60,
                             expiration: 3600,
                             support_path: ast_bool_values.yes,
@@ -134,7 +134,7 @@ export class TroncoService {
                 }
             })
 
-            await this.createTronco(troncoDto);
+            await this.createTronco(dto);
 
             return this.mapTronco(tronco);
         } catch (error) {
@@ -148,7 +148,7 @@ export class TroncoService {
         }
     }
 
-    async update(troncoId: string, troncoDto: UpdateTroncoDto): Promise<UpdateTroncoDto> {
+    async update(troncoId: string, dto: UpdateTroncoDto): Promise<UpdateTroncoDto> {
         try {
             const troncoExistente = await this.prismaRead.ps_endpoints.findUnique({
                 where: {
@@ -176,17 +176,17 @@ export class TroncoService {
                     id: troncoId,
                 },
                 data: {
-                    id: troncoDto.username,
+                    id: dto.username,
                     authsRelation: {
                         update: {
-                            username: troncoDto.username,
-                            password: troncoDto.password,
+                            username: dto.username,
+                            password: dto.password,
                         }
                     },
                     registrationRelation: {
                         update: {
-                            server_uri: this.generateServerUri(troncoDto.provedorHost || troncoExistente.registrationRelation.client_uri!.split('@')[1]),
-                            client_uri: this.generateClientUri(troncoDto.username, troncoDto.provedorHost || troncoExistente.registrationRelation.client_uri!.split('@')[1]),
+                            server_uri: this.generateServerUri(dto.provedorHost || troncoExistente.registrationRelation.client_uri!.split('@')[1]),
+                            client_uri: this.generateClientUri(dto.username, dto.provedorHost || troncoExistente.registrationRelation.client_uri!.split('@')[1]),
                         }
                     },
                 },
@@ -205,7 +205,7 @@ export class TroncoService {
                 }
             })
 
-            await this.updateTronco(troncoId, troncoDto);
+            await this.updateTronco(troncoId, dto);
 
             return this.mapTronco(tronco);
         } catch (error) {

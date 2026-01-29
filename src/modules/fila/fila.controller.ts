@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { FilaService } from "./fila.service";
 import { CreateFilaDto, FindFilaDto, ListFilaDto, UpdateFilaDto } from "./dto/fila.dto";
@@ -28,9 +28,9 @@ export class FilaController {
         type: FindFilaDto,
     })
     async find(
-        @Param('id') filaId: string
+        @Param('id', new ParseUUIDPipe()) id: string
     ): Promise<FindFilaDto> {
-        return await this.filaService.find(filaId);
+        return await this.filaService.find(id);
     }
 
     @Post('create')
@@ -41,9 +41,9 @@ export class FilaController {
         type: CreateFilaDto,
     })
     async create(
-        @Body() createFilaDto: CreateFilaDto
+        @Body() dto: CreateFilaDto
     ): Promise<CreateFilaDto> {
-        return await this.filaService.create(createFilaDto);
+        return await this.filaService.create(dto);
     }
 
     @Delete(':id')
@@ -52,8 +52,8 @@ export class FilaController {
         status: 200,
         description: 'Fila deletada com sucesso.',
     })
-    async delete(@Param('id') filaId: string): Promise<void> {
-        return await this.filaService.delete(filaId);
+    async delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+        return await this.filaService.delete(id);
     }
 
     @Put(':id')
@@ -64,10 +64,10 @@ export class FilaController {
         type: UpdateFilaDto,
     })
     async update(
-        @Param('id') filaId: string, 
-        @Body() updateFilaDto: UpdateFilaDto
+        @Param('id', new ParseUUIDPipe()) id: string, 
+        @Body() dto: UpdateFilaDto
     ): Promise<UpdateFilaDto> {
-        return await this.filaService.update(filaId, updateFilaDto);
+        return await this.filaService.update(id, dto);
     }
 
     @Put(':id/member')
@@ -77,12 +77,12 @@ export class FilaController {
         description: 'Membro adicionado/removido com sucesso.',
     })
     async addMember(
-        @Param('id') filaId: string,
-        @Body() toggleMemberDto: ToggleMemberDto
+        @Param('id', new ParseUUIDPipe()) id: string,
+        @Body() dto: ToggleMemberDto
     ): Promise<{ message: string }> {
        
-        const result = await this.filaService.toggleMember(filaId, toggleMemberDto);
+        const result = await this.filaService.toggleMember(id, dto);
        
-        return { message: result ? `Membro ${toggleMemberDto.ramal} adicionado à fila` : `Membro ${toggleMemberDto.ramal} removido da fila` };
+        return { message: result ? `Membro ${dto.ramal} adicionado à fila` : `Membro ${dto.ramal} removido da fila` };
     }
 }

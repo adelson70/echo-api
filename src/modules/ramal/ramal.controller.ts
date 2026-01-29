@@ -26,7 +26,9 @@ export class RamalController {
         description: 'Ramal encontrado com sucesso',
         type: FindRamalDto,
     })
-    async find(@Param('ramal') ramal: string): Promise<FindRamalDto> {
+    async find(
+        @Param('ramal') ramal: string
+    ): Promise<FindRamalDto> {
         return await this.ramalService.find(ramal);
     }
 
@@ -37,8 +39,10 @@ export class RamalController {
         description: 'Ramal criado com sucesso.',
         type: CreateRamalDto,
     })
-    async create(@Body() ramalDto: CreateRamalDto): Promise<CreateRamalDto> {
-        return await this.ramalService.create(ramalDto);
+    async create(
+        @Body() dto: CreateRamalDto
+    ): Promise<CreateRamalDto> {
+        return await this.ramalService.create(dto);
     }
 
     @Post('create-lote')
@@ -48,8 +52,10 @@ export class RamalController {
         description: 'Lote de ramais criado com sucesso.',
         type: ListRamalDto,
     })
-    async createLote(@Body() loteRamalDto: CreateLoteRamalDto): Promise<ListRamalDto[]> {
-        return await this.ramalService.createLote(loteRamalDto);
+    async createLote(
+        @Body() dto: CreateLoteRamalDto
+    ): Promise<ListRamalDto[]> {
+        return await this.ramalService.createLote(dto);
     }
 
     @Delete(':ramal')
@@ -69,8 +75,11 @@ export class RamalController {
         description: 'Ramal editado com sucesso.',
         type: UpdateRamalDto,
     })
-    async update(@Param('ramal') ramal: string, @Body() ramalDto: UpdateRamalDto): Promise<UpdateRamalDto> {
-        return await this.ramalService.update(ramal, ramalDto);
+    async update(
+        @Param('ramal') ramal: string, 
+        @Body() dto: UpdateRamalDto
+    ): Promise<UpdateRamalDto> {
+        return await this.ramalService.update(ramal, dto);
     }
 
 

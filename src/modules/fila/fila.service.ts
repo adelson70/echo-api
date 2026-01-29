@@ -40,12 +40,12 @@ export class FilaService {
         }
     }
 
-    async find(filaId: string): Promise<FindFilaDto> {
+    async find(id: string): Promise<FindFilaDto> {
 
         try {
             const filaEncontrada = await this.prismaRead.queues.findFirst({
                 where: {
-                    id: filaId,
+                    id,
                 },
                 select: {
                     id: true,
@@ -70,20 +70,24 @@ export class FilaService {
         } catch (error) {
             if (error instanceof HttpException) throw error;
 
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
+            }
+
             throw new InternalServerErrorException('Erro ao buscar fila');
         }
     }  
 
-    async create(createFilaDto: CreateFilaDto): Promise<CreateFilaDto> {
+    async create(dto: CreateFilaDto): Promise<CreateFilaDto> {
         try {
             const fila = await this.prismaWrite.queues.create({
                 data: {
-                    name: createFilaDto.nomeIdentificador,
-                    displayname: createFilaDto.nome,
-                    strategy: createFilaDto.estrategia,
-                    timeout: createFilaDto.tempoEspera,
-                    retry: createFilaDto.tentativas,
-                    musiconhold: createFilaDto.musicaDeEspera,
+                    name: dto.nomeIdentificador,
+                    displayname: dto.nome,
+                    strategy: dto.estrategia,
+                    timeout: dto.tempoEspera,
+                    retry: dto.tentativas,
+                    musiconhold: dto.musicaDeEspera,
                 },
                 select: {
                     name: true,
@@ -113,11 +117,11 @@ export class FilaService {
         }
     }
 
-    async delete(filaId: string): Promise<void> {
+    async delete(id: string): Promise<void> {
         try {
             await this.prismaWrite.queues.delete({
                 where: {
-                    id: filaId,
+                    id,
                 }
             });
         }
@@ -125,6 +129,7 @@ export class FilaService {
             if (error instanceof HttpException) throw error;
 
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
                 if (error.code === 'P2025') throw new NotFoundException('Fila não encontrada');
             }
 
@@ -132,13 +137,13 @@ export class FilaService {
         }
     }
 
-    async update(filaId: string, updateFilaDto: UpdateFilaDto): Promise<UpdateFilaDto> {
+    async update(id: string, dto: UpdateFilaDto): Promise<UpdateFilaDto> {
         try {
-            if (Object.keys(updateFilaDto).length === 0) throw new BadRequestException('Nenhum dado para atualizar');
+            if (Object.keys(dto).length === 0) throw new BadRequestException('Nenhum dado para atualizar');
 
             const filaAtualizada = await this.prismaWrite.queues.update({
-                where: { id: filaId },
-                data: updateFilaDto,
+                where: { id },
+                data: dto,
             }) as unknown as Prisma.queuesGetPayload<{ include: { queue_members: true } }>;
 
             return this.mapFila(filaAtualizada);
@@ -147,6 +152,7 @@ export class FilaService {
             if (error instanceof HttpException) throw error;
 
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
                 if (error.code === 'P2025') throw new NotFoundException('Fila não encontrada');
             }
 
@@ -154,11 +160,11 @@ export class FilaService {
         }
     }
 
-    async toggleMember(filaId: string, toggleMemberDto: ToggleMemberDto): Promise<boolean> {
+    async toggleMember(id: string, dto: ToggleMemberDto): Promise<boolean> {
         try {
             const ramalExiste = await this.prismaRead.ps_endpoints.findFirst({
                 where: {
-                    id: toggleMemberDto.ramal,
+                    id: dto.ramal,
                 },
             });
 
@@ -166,7 +172,7 @@ export class FilaService {
 
             const filaExiste = await this.prismaRead.queues.findFirst({
                 where: {
-                    id: filaId,
+                    id,
                 },
             });
 
@@ -174,8 +180,8 @@ export class FilaService {
 
             const memberExiste = await this.prismaRead.queue_members.findFirst({
                 where: {
-                    queue_id: filaId,
-                    ramal_id: toggleMemberDto.ramal,
+                    queue_id: id,
+                    ramal_id: dto.ramal,
                 },
             });
 
@@ -193,10 +199,10 @@ export class FilaService {
             else {
                 const data = {
                     queue_name: filaExiste.name,
-                    queue_id: filaId,
-                    ramal_id: toggleMemberDto.ramal,
-                    interface: `PJSIP/${toggleMemberDto.ramal}`,
-                    membername: toggleMemberDto.ramal,
+                    queue_id: id,
+                    ramal_id: dto.ramal,
+                    interface: `PJSIP/${dto.ramal}`,
+                    membername: dto.ramal,
                     penalty: 0,
                     paused: 0,
                 }
@@ -209,6 +215,10 @@ export class FilaService {
         }
         catch (error) {
             if (error instanceof HttpException) throw error;
+
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
+            }
 
             throw new InternalServerErrorException('Erro ao adicionar/remover membro à fila');
         }

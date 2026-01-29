@@ -1,13 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RegraService } from "./regra.service";
-import { CreateRegraDto, ListRegraDto, RegraCompletoDto } from "./dto/regra.dto";
+import { CreateRegraDto, ListRegraDto, RegraCompletoDto, UpdateRegraDto } from "./dto/regra.dto";
 import { context_values } from "@prisma/client";
+import { UUID } from "crypto";
 
 @ApiTags('Regra')
 @Controller('regra')
 export class RegraController {
-    constructor(private readonly regraService: RegraService) {}
+    constructor(
+        private readonly regraService: RegraService
+    ) {}
 
     @Get()
     @ApiQuery({ name: 'tipo', enum: context_values, required: false })
@@ -30,7 +33,7 @@ export class RegraController {
         description: 'Regra encontrada com sucesso',
         type: RegraCompletoDto,
     })
-    async find(@Param('id') id: string): Promise<RegraCompletoDto> {
+    async find(@Param('id', new ParseUUIDPipe()) id: string): Promise<RegraCompletoDto> {
         return await this.regraService.find(id);
     }
 
@@ -42,9 +45,23 @@ export class RegraController {
         type: ListRegraDto,
     })
     async create(
-        @Body() data: CreateRegraDto
+        @Body() dto: CreateRegraDto
     ): Promise<ListRegraDto> {
-        return await this.regraService.create(data);
+        return await this.regraService.create(dto);
+    }
+
+    @Put(':id')
+    @ApiOperation({ summary: 'Atualizar uma regra existente' })
+    @ApiResponse({
+        status: 200,
+        description: 'Regra atualizada com sucesso',
+        type: ListRegraDto,
+    })
+    async update(
+        @Param('id', new ParseUUIDPipe()) id: string,
+        @Body() dto: UpdateRegraDto
+    ): Promise<ListRegraDto> {
+        return await this.regraService.update(id, dto);
     }
 
     @Delete(':id')
@@ -52,7 +69,7 @@ export class RegraController {
     @ApiResponse({ status: 200, description: 'Regra deletada com sucesso' })
     @ApiResponse({ status: 404, description: 'Regra não encontrada' })
     @ApiResponse({ status: 500, description: 'Erro ao deletar regra' })
-    async delete(@Param('id') id: string): Promise<void> {
+    async delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
         return await this.regraService.delete(id);
     }
 }

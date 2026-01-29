@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { PerfilService } from "./perfil.service";
 import { AddPermissaoPerfilDto, CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
@@ -26,7 +26,9 @@ export class PerfilController {
         description: 'Perfil encontrado com sucesso',
         type: FindPerfilDto,
     })
-    async find(@Param('id') id: string): Promise<FindPerfilDto> {
+    async find(
+        @Param('id', new ParseUUIDPipe()) id: string
+    ): Promise<FindPerfilDto> {
         return await this.perfilService.find(id);
     }
 
@@ -37,8 +39,10 @@ export class PerfilController {
         description: 'Perfil criado com sucesso',
         type: CreatePerfilDto,
     })
-    async create(@Body() createPerfilDto: CreatePerfilDto): Promise<CreatePerfilDto> {
-        return await this.perfilService.create(createPerfilDto);
+    async create(
+        @Body() dto: CreatePerfilDto
+    ): Promise<CreatePerfilDto> {
+        return await this.perfilService.create(dto);
     }
 
     @Put(':id')
@@ -48,8 +52,11 @@ export class PerfilController {
         description: 'Perfil atualizado com sucesso',
         type: UpdatePerfilDto,
     })
-    async update(@Param('id') id: string, @Body() updatePerfilDto: UpdatePerfilDto): Promise<UpdatePerfilDto> {
-        return await this.perfilService.update(id, updatePerfilDto);
+    async update(
+        @Param('id', new ParseUUIDPipe()) id: string, 
+        @Body() dto: UpdatePerfilDto
+    ): Promise<UpdatePerfilDto> {
+        return await this.perfilService.update(id, dto);
     }
 
     @Delete(':id')
@@ -58,7 +65,9 @@ export class PerfilController {
         status: 200,
         description: 'Perfil deletado com sucesso',
     })
-    async delete(@Param('id') id: string): Promise<void> {
+    async delete(
+        @Param('id', new ParseUUIDPipe()
+    ) id: string): Promise<void> {
         return await this.perfilService.delete(id);
     }
 
@@ -71,7 +80,9 @@ export class PerfilController {
         status: 201,
         description: 'Permissões atualizadas com sucesso',
     })
-    async addPermissao(@Body() addPermissaoDto: AddPermissaoPerfilDto): Promise<void> {
-        return await this.perfilService.togglePermissao(addPermissaoDto);
+    async addPermissao(
+        @Body() dto: AddPermissaoPerfilDto
+    ): Promise<void> {
+        return await this.perfilService.togglePermissao(dto);
     }
 }

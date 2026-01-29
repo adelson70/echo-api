@@ -33,9 +33,9 @@ export class TroncoController {
     @ApiResponse({ status: 400, description: 'Dados inválidos' })
     @ApiResponse({ status: 500, description: 'Erro ao criar tronco' })
     async create(
-        @Body() troncoDto: CreateTroncoDto
+        @Body() dto: CreateTroncoDto
     ): Promise<CreateTroncoDto> {
-        return await this.troncoService.create(troncoDto);
+        return await this.troncoService.create(dto);
     }
 
     @Put(':tronco')
@@ -46,9 +46,9 @@ export class TroncoController {
     @ApiResponse({ status: 500, description: 'Erro ao atualizar tronco' })
     async update(
         @Param('tronco') tronco: string, 
-        @Body() troncoDto: UpdateTroncoDto
+        @Body() dto: UpdateTroncoDto
     ): Promise<UpdateTroncoDto> {
-        return await this.troncoService.update(tronco, troncoDto);
+        return await this.troncoService.update(tronco, dto);
     }
 
     @Delete(':tronco')
