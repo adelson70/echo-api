@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'infinity_whatsapp',
+      name: 'echo_api',
       script: 'dist/src/main.js',
       instances: 1,
       autorestart: true,

@@ -119,7 +119,45 @@ export class RegraService {
 
     async update(id: string, dto: UpdateRegraDto): Promise<ListRegraDto> {
         try {
-            return this.mapRegra(dto);
+            if (dto.regra && dto.regra.length > 0) {
+                await this.prismaWrite.$transaction(async (tx) => {
+                    await tx.extensions.deleteMany({ where: { dialplan_id: id }});
+                    await tx.extensions.createMany({
+                        data: dto.regra.map(r => ({
+                            dialplan_id: id,
+                            context: dto.tipo,
+                            exten: r.rota,
+                            priority: r.prioridade,
+                            app: r.acao,
+                            appdata: r.parametros,
+                        }))
+                    })
+                });
+            }
+            const regra = await this.prismaWrite.dialplan.update({
+                where: { id },
+                data: {
+                    name: dto.nome,
+                    description: dto.descricao,
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    type: true,
+                    extensions: {
+                        select: {
+                            id: true,
+                            context: true,
+                            exten: true,
+                            priority: true,
+                            app: true,
+                            appdata: true,
+                        }
+                    }
+                }
+            });
+            return this.mapRegra(regra);
         } catch (error) {
             if (error instanceof HttpException) throw error;
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

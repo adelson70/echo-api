@@ -141,18 +141,19 @@ export class CreateRegraDto extends PartialType(
     regra: RegraDtoSemId[];
 }
 
-export class UpdateRegraDto extends PartialType(
-    OmitType(CreateRegraDto, ['tipo'] as const)
-) {
+export class UpdateRegraDto extends CreateRegraDto{
     @IsOptional()
     declare nome: string;
 
     @IsOptional()
     declare descricao: string;
 
+    @IsNotEmpty()
+    declare tipo: context_values;
+
     @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => RegraDto)
-    regra: RegraDto[];
+    @Type(() => RegraDtoSemId)
+    declare regra: RegraDtoSemId[];
 }
