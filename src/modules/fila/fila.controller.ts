@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { FilaService } from "./fila.service";
 import { CreateFilaDto, FindFilaDto, ListFilaDto, UpdateFilaDto } from "./dto/fila.dto";
 import { ToggleMemberDto } from "../ramal/dto/ramal.dto";
+import { UuidPipe } from "src/common/pipes/uuid.pipe";
 
 @ApiTags('Fila')
 @Controller('fila')
@@ -28,7 +29,7 @@ export class FilaController {
         type: FindFilaDto,
     })
     async find(
-        @Param('id', new ParseUUIDPipe()) id: string
+        @Param('id', new UuidPipe()) id: string
     ): Promise<FindFilaDto> {
         return await this.filaService.find(id);
     }
@@ -52,7 +53,7 @@ export class FilaController {
         status: 200,
         description: 'Fila deletada com sucesso.',
     })
-    async delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    async delete(@Param('id', new UuidPipe()) id: string): Promise<void> {
         return await this.filaService.delete(id);
     }
 
@@ -64,7 +65,7 @@ export class FilaController {
         type: UpdateFilaDto,
     })
     async update(
-        @Param('id', new ParseUUIDPipe()) id: string, 
+        @Param('id', new UuidPipe()) id: string, 
         @Body() dto: UpdateFilaDto
     ): Promise<UpdateFilaDto> {
         return await this.filaService.update(id, dto);
@@ -77,7 +78,7 @@ export class FilaController {
         description: 'Membro adicionado/removido com sucesso.',
     })
     async addMember(
-        @Param('id', new ParseUUIDPipe()) id: string,
+        @Param('id', new UuidPipe()) id: string,
         @Body() dto: ToggleMemberDto
     ): Promise<{ message: string }> {
        

@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { PerfilService } from "./perfil.service";
 import { AddPermissaoPerfilDto, CreatePerfilDto, FindPerfilDto, ListPerfilDto, UpdatePerfilDto } from "./dto/perfil.dto";
+import { UuidPipe } from "src/common/pipes/uuid.pipe";
 
 @ApiTags('Perfil')
 @Controller('perfil')
@@ -27,7 +28,7 @@ export class PerfilController {
         type: FindPerfilDto,
     })
     async find(
-        @Param('id', new ParseUUIDPipe()) id: string
+        @Param('id', new UuidPipe()) id: string
     ): Promise<FindPerfilDto> {
         return await this.perfilService.find(id);
     }
@@ -53,7 +54,7 @@ export class PerfilController {
         type: UpdatePerfilDto,
     })
     async update(
-        @Param('id', new ParseUUIDPipe()) id: string, 
+        @Param('id', new UuidPipe()) id: string, 
         @Body() dto: UpdatePerfilDto
     ): Promise<UpdatePerfilDto> {
         return await this.perfilService.update(id, dto);
@@ -66,7 +67,7 @@ export class PerfilController {
         description: 'Perfil deletado com sucesso',
     })
     async delete(
-        @Param('id', new ParseUUIDPipe()
+        @Param('id', new UuidPipe()
     ) id: string): Promise<void> {
         return await this.perfilService.delete(id);
     }

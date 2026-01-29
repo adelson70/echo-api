@@ -118,7 +118,16 @@ export class RegraService {
     }
 
     async update(id: string, dto: UpdateRegraDto): Promise<ListRegraDto> {
-        return this.mapRegra(dto)
+        try {
+            return this.mapRegra(dto);
+        } catch (error) {
+            if (error instanceof HttpException) throw error;
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2007') throw new InternalServerErrorException('UUID inválido');
+                if (error.code === 'P2025') throw new NotFoundException('Regra não encontrada');
+            }
+            throw new InternalServerErrorException('Erro ao atualizar regra');
+        }
     }
 
     async delete(id: string): Promise<void> {

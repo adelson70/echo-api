@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { GrupoDeCapturaService } from "./grupo-de-captura.service";
 import { CreateGrupoDeCapturaDto, FindGrupoDeCapturaDto, ListGrupoDeCapturaDto, ToggleGrupoDeCapturaDto, UpdateGrupoDeCapturaDto } from "./dto/grupo-de-captura.dto";
+import { UuidPipe } from "src/common/pipes/uuid.pipe";
 
 @ApiTags('GrupoDeCaptura')
 @Controller('grupo-de-captura')
@@ -20,7 +21,7 @@ export class GrupoDeCapturaController {
     @ApiResponse({ status: 200, description: 'Grupo de captura encontrado com sucesso', type: FindGrupoDeCapturaDto,
     })
     async find(
-        @Param('id', new ParseUUIDPipe()) id: string
+        @Param('id', new UuidPipe()) id: string
     ): Promise<FindGrupoDeCapturaDto> {
         return await this.grupoDeCapturaService.find(id);
     }
@@ -40,7 +41,7 @@ export class GrupoDeCapturaController {
     @ApiResponse({ status: 200, description: 'Grupo de captura atualizado com sucesso', type: UpdateGrupoDeCapturaDto,
     })
     async update(
-        @Param('id', new ParseUUIDPipe()) id: string,
+        @Param('id', new UuidPipe()) id: string,
         @Body() dto: UpdateGrupoDeCapturaDto
     ): Promise<UpdateGrupoDeCapturaDto> {
         return await this.grupoDeCapturaService.update(id, dto);
@@ -50,7 +51,7 @@ export class GrupoDeCapturaController {
     @ApiOperation({ summary: 'Deletar um grupo de captura' })
     @ApiResponse({ status: 200, description: 'Grupo de captura deletado com sucesso' })
     async delete(
-        @Param('id', new ParseUUIDPipe()) id: string
+        @Param('id', new UuidPipe()) id: string
     ): Promise<void> {
         await this.grupoDeCapturaService.delete(id);
     }

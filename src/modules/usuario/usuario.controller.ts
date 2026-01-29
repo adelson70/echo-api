@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UsuarioService } from "./usuario.service";
 import { AddPermissaoUsuarioDto, CreateUsuarioDto, FindUsuarioDto, ListUsuarioDto, UpdateUsuarioDto } from "./dto/usuario.dto";
 import { Usuario, type UsuarioPayload } from "src/common/decorators/usuario.decorator";
 import { Modulos } from "@prisma/client";
+import { UuidPipe } from "src/common/pipes/uuid.pipe";
 
 @ApiTags('Usuario')
 @Controller('usuario')
@@ -31,7 +32,7 @@ export class UsuarioController {
         type: FindUsuarioDto,
     })
     async find(
-        @Param('id', new ParseUUIDPipe()) id: string,
+        @Param('id', new UuidPipe()) id: string,
         @Usuario() usuario: UsuarioPayload,
     ): Promise<FindUsuarioDto> {
         return await this.usuarioService.find(id, usuario);
@@ -59,7 +60,7 @@ export class UsuarioController {
         type: UpdateUsuarioDto,
     })
     async update(
-        @Param('id', new ParseUUIDPipe()) id: string, 
+        @Param('id', new UuidPipe()) id: string, 
         @Body() dto: UpdateUsuarioDto, 
         @Usuario() usuario: UsuarioPayload): Promise<UpdateUsuarioDto> {
         return await this.usuarioService.update(id, dto, usuario);
@@ -72,7 +73,7 @@ export class UsuarioController {
         description: 'Usuário deletado com sucesso',
     })
     async delete(
-        @Param('id', new ParseUUIDPipe()) id: string, 
+        @Param('id', new UuidPipe()) id: string, 
         @Usuario() usuario: UsuarioPayload): Promise<void> {
         return await this.usuarioService.delete(id, usuario);
     }
