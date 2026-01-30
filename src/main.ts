@@ -96,6 +96,7 @@ async function bootstrap() {
       swaggerOptions: {
         persistAuthorization: true,
       },
+      customSiteTitle: 'Echo API Docs',
     };
   
     SwaggerModule.setup('/docs', app, document, swaggerCustomOptions);

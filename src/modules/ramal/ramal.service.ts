@@ -277,6 +277,7 @@ export class RamalService {
                     },
                     data: {
                         set_var: data.set_var,
+                        displayname: dto.nome || ramalExiste.displayname,
                         context: data.context,
                         authsRelation: {
                             update: { password: data.authsRelation!.password },
@@ -288,6 +289,7 @@ export class RamalService {
                     select: {
                         id: true,
                         context: true,
+                        displayname: true,
                         set_var: true,
                         authsRelation: {
                             select: {
