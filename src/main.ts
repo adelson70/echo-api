@@ -27,7 +27,7 @@ async function bootstrap() {
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   app.enableCors({
-    origin: '*',
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true,

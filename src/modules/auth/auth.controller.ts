@@ -5,6 +5,7 @@ import { LoginDto } from "./dto/auth.dto";
 import type { Request, Response } from "express";
 import ms, { StringValue } from "ms";
 import { Public } from "src/common/decorators/public-route.decorator";
+import { Usuario, type UsuarioPayload } from "src/common/decorators/usuario.decorator";
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -37,6 +38,13 @@ export class AuthController {
     ){
         res.cookie('rt', '', { httpOnly: true, secure: true, maxAge: 0 });
         return res.status(200).json({ message: 'Logout realizado com sucesso' });
+    }
+
+    @Get('me')
+    async me(
+        @Usuario() usuario: UsuarioPayload,
+    ){
+        return { usuario };
     }
 
     @Public()

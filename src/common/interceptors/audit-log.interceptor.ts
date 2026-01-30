@@ -41,10 +41,6 @@ export class AuditLogInterceptor implements NestInterceptor {
       metaData: this.createMetaData(request),
     };
 
-    if (!usuario && !this.isPublicRoute(originalUrl)) {
-      data.usuario_id = 'desconhecido';
-    }
-
     const logId = await this.logService.create({ ...data });
     
     return next.handle().pipe(

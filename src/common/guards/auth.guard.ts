@@ -38,6 +38,11 @@ export class AuthGuard implements CanActivate {
 
 		const { at, rt } = this.getTokens(request);
 
+		if (!at && !rt) {
+			await this.logUnauthenticatedAttempt(method, originalUrl, ip, 'tokens_ausentes', request);
+			throw new UnauthorizedException('Nenhum token fornecido');
+		}
+		
 		if (!rt) {
 			await this.logUnauthenticatedAttempt(method, originalUrl, ip, 'refresh_token_ausente', request);
 			this.clearRefreshTokenFromCookie(response);
@@ -71,7 +76,6 @@ export class AuthGuard implements CanActivate {
 			return true;
 		} catch (error) {
 			// Token inválido/expirado - registra log e barra
-			console.log(error);
 			const reason = error.name === 'TokenExpiredError' ? 'access_token_expirado' : 'access_token_invalido';
 			await this.logUnauthenticatedAttempt(method, originalUrl, ip, reason, request);
 			throw new UnauthorizedException('Token inválido ou expirado');
@@ -82,7 +86,13 @@ export class AuthGuard implements CanActivate {
 		method: string,
 		path: string,
 		ip: string,
-		reason: 'access_token_ausente' | 'refresh_token_ausente' | 'access_token_invalido' | 'refresh_token_invalido' | 'access_token_expirado' | 'refresh_token_expirado',
+		reason: 'access_token_ausente' | 
+				'refresh_token_ausente' | 
+				'access_token_invalido' | 
+				'refresh_token_invalido' | 
+				'access_token_expirado' | 
+				'refresh_token_expirado' |
+				'tokens_ausentes',
 		request: Request,
 	): Promise<void> {
 		try {

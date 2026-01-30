@@ -12,13 +12,19 @@ export class PermissaoGuard implements CanActivate {
     constructor(
         private readonly reflector: Reflector,
         private readonly prismaRead: PrismaReadService
-    ) {}
+    ) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
+
+        if (this.isPublicRoute(context)) {
+            return true;
+        }
+
         const request = context.switchToHttp().getRequest<Request>();
         const { usuario } = request as unknown as { usuario: UsuarioPayload };
+        const rt = request.cookies?.rt || request.headers.cookie?.split(';').find(c => c.trim().startsWith('rt='))?.split('=')[1] || '';
 
-        if (!usuario && request.path !== '/auth/login') {
+        if (!usuario && request.path !== '/auth/login' && !rt) {
             throw new UnauthorizedException('Usuário não autenticado');
         }
 
@@ -27,7 +33,7 @@ export class PermissaoGuard implements CanActivate {
         const modulo = this.checkModule(context, request);
 
         if (usuario.is_admin) return true;
-        
+
         return await this.checkPermissao(modulo.modulo, modulo.tipoAcesso, usuario);
     }
 
@@ -42,7 +48,7 @@ export class PermissaoGuard implements CanActivate {
         if (!tipoAcesso) {
             throw new UnauthorizedException('Tipo de acesso não encontrado');
         }
-        
+
         return { modulo, tipoAcesso };
     }
 
@@ -76,7 +82,7 @@ export class PermissaoGuard implements CanActivate {
         });
 
         const permissaoModuloUsuario = permissao?.permissoesUsuario.find(
-            p => p.modulo === modulo 
+            p => p.modulo === modulo
         );
 
         if (permissaoModuloUsuario) {
@@ -86,7 +92,7 @@ export class PermissaoGuard implements CanActivate {
         }
 
         const permissaoModuloPerfil = permissao?.perfil?.permissoes.find(
-            p => p.modulo === modulo 
+            p => p.modulo === modulo
         );
 
         if (permissaoModuloPerfil) {
@@ -96,5 +102,13 @@ export class PermissaoGuard implements CanActivate {
         }
 
         throw new UnauthorizedException(`Usuário não permite ${tipoAcesso} no modulo ${modulo}`);
+    }
+
+    private isPublicRoute(context: ExecutionContext): boolean {
+        const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+        return isPublic;
     }
 }
